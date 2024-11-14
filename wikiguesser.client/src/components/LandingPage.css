@@ -1,0 +1,35 @@
+body {
+    background-image: url('../assets/background.jpg');
+    background-size: cover;
+}
+
+.mainPage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin-top: 200px;
+}
+
+h1 {
+    color: white;
+    font-size: 50px;
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+    color: darkblue;
+    background-color: white;
+    font-size: 30px;
+    margin-top: 20px;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 20px;
+    transition: transform 0.2s;
+}
+
+a:hover {
+    transform: scale(1.1);
+}

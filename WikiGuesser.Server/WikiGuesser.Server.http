@@ -1,0 +1,14 @@
+@WikiGuesser.Server_HostAddress = http://localhost:5084
+
+GET {{WikiGuesser.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/GetRandomArticle
+
+###
+
+GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/article/Python
+
+###
