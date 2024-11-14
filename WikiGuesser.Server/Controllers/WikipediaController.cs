@@ -46,7 +46,7 @@ namespace WikiGuesser.Server.Controllers
         public async Task<IActionResult> GetCities()
         {
             // Budowanie URL zapytania do API Wikipedii
-            var url = "https://en.wikipedia.org/w/api.php?action=query&list=categorymembers&cmpageid=34234467&cmlimit=500&format=json";
+            var url = "https://en.wikipedia.org/w/api.php?action=query&titles=List_of_countries&prop=extracts&exintro=true&format=json";
 
             try
             {
