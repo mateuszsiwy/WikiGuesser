@@ -1,15 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './LandingPage.css';
+import Footer from './Footer';
+
 function LandingPage() {
-    console.log("LandingPage is rendered");
+  console.log("LandingPage is rendered");
   return (
-    <div class="mainPage">
-      <h1>WikiGuesser</h1>
-          <Link to="/game">
-            <a>Start Game</a>
-          </Link>
-    </div>
+    <>
+      <div className="mainPage">
+        <div className="center">
+          <h1>Welcome to WikiGuesser</h1>
+          <div className="chooseLog">
+            <Link to="/game" className="choose">
+              <a className="choose">Play as a guest</a>
+            </Link>
+            <a className="choose">Log in</a>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 }
 
