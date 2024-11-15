@@ -2,7 +2,7 @@ import './Footer.css';
 
 function Footer() {
   return (
-      <p>© 2024 Mateusz Siwy. All rights reserved.</p>
+      <p className="footer">© 2024 Mateusz Siwy. All rights reserved.</p>
   );
 }
 

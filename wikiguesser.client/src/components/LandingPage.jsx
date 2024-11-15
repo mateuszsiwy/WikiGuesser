@@ -11,7 +11,7 @@ function LandingPage() {
         <div className="center">
           <h1>Welcome to WikiGuesser</h1>
           <div className="chooseLog">
-            <Link to="/game" className="choose">
+            <Link to="/gamemodes" className="choose">
               <a className="choose">Play as a guest</a>
             </Link>
             <a className="choose">Log in</a>

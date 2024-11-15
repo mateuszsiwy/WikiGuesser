@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import GamePage from './components/GamePage';
+import GameModesPage from './components/gamemodes/GameModesPage';
 
 function App() {
     console.log("App is rendered");
@@ -11,6 +12,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/game" element={<GamePage />} />
+                <Route path="/gamemodes" element={<GameModesPage />} /> 
             </Routes>
         </Router>
     );
