@@ -9,6 +9,10 @@ GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/GetRandomArticle
 
 ###
 
-GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/article/Python
+GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/article/Maymana
+
+###
+
+GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/cities
 
 ###
