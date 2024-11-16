@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using WikiGuesser.Server.Models;
 namespace WikiGuesser.Server.Controllers
 {
     [Route("api/[controller]")]
@@ -9,17 +9,18 @@ namespace WikiGuesser.Server.Controllers
     public class WikipediaController : Controller
     {
         private readonly HttpClient _httpClient;
-
-        public WikipediaController(HttpClient httpClient)
+        private readonly WikiGuesserDbContext _context;
+        public WikipediaController(HttpClient httpClient, WikiGuesserDbContext context)
         {
             _httpClient = httpClient;
+            _context = context;
         }
 
         [HttpGet("article/{title}")]
         public async Task<IActionResult> GetArticle(string title)
         {
             // Budowanie URL zapytania do API Wikipedii
-            var url = $"https://en.wikipedia.org/w/api.php?action=parse&format=json&page={title}&prop=text";
+            var url = $"https://en.wikipedia.org/api/rest_v1/page/html/{title}";
 
             try
             {
@@ -68,6 +69,27 @@ namespace WikiGuesser.Server.Controllers
                     "VE", "VN", "YE", "ZM", "ZW"
                 };
             List<string> cities = new List<string>();
+
+            if (_context.Countries.Count() == 0)
+            {
+                foreach(var code in countryCodes)
+                {
+                    cities = await GetRandomCitiesFromCountry(code);
+                    if (cities.Count > 0)
+                    {
+                        var country = new Country { Name = code };
+                        _context.Countries.Add(country);
+                        await _context.SaveChangesAsync();
+                        foreach(var city in cities)
+                        {
+                            var newCity = new City { Name = city, CountryId = country.Id };
+                            _context.Cities.Add(newCity);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                }   
+            }
+
             foreach(var code in countryCodes)
             {
                 cities = await GetRandomCitiesFromCountry(code);

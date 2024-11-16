@@ -9,17 +9,21 @@
     height: 330px;
 }
 
-.gameMode h2{
-    font-size: 40px;
-    color: white;
-    text-align: center;
-    margin-top: 20px;
-}
+    .gameMode h2 {
+        font-size: 40px;
+        color: white;
+        text-align: center;
+        margin-top: 20px;
+        backdrop-filter: blur(5px);
+    }
 
-.gameMode p{
-    font-size: 20px;
-    color: white;
-    text-align: center;
-    margin-top: 20px;
-}
+
+    .gameMode p {
+        filter: none;
+        font-size: 20px;
+        color: white;
+        text-align: center;
+        margin-top: 20px;
+        backdrop-filter: blur(5px);
+    }
 

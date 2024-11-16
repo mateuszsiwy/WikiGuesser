@@ -5,15 +5,15 @@ function GameMode({ image, h2, p }) {
     const divStyle = {
         backgroundImage: `url(${image})`,
         backgroundSize: 'cover', 
-        backgroundPosition: 'center' 
+        backgroundPosition: 'center'
     };
 
     return (
-
         <a>
-        <div className="gameMode" style={divStyle}>
-            <h2>{h2}</h2>
-            <p>{p}</p>
+            <div className="gameMode" style={divStyle}>
+                
+                <h2>{h2}</h2>
+                <p>{p}</p>
             </div>
         </a>
     );
