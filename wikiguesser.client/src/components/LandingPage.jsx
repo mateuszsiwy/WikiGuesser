@@ -9,12 +9,14 @@ function LandingPage() {
     <>
       <div className="mainPage">
         <div className="center">
-          <h1>Welcome to WikiGuesser</h1>
+          <h1>Welcome to <span className="highlight">WikiGuesser</span></h1>
           <div className="chooseLog">
             <Link to="/gamemodes" className="choose">
               <a className="choose">Play as a guest</a>
             </Link>
-            <a className="choose">Log in</a>
+            <Link to="/login" className="choose">
+              <a className="choose">Log in</a>
+            </Link>
           </div>
         </div>
       </div>

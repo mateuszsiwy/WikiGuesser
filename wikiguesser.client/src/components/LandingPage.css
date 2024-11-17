@@ -1,16 +1,20 @@
 body {
-    background-image: url('../assets/backgroundMountains.jpg');
-    background-size: cover;
+    
     font-family: 'Roboto Mono', monospace;
 }
 
 .mainPage {
+    background-image: url('../assets/nature-3507.gif');
+    background-size: cover;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    margin-top: 300px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
 }
 
 .center{
@@ -18,14 +22,19 @@ body {
     border-radius: 20%;
 }
 
-.center h1 {
-    font-size: 46px;
-    color: white;
-    background-color: rgba(223, 193, 137, 0.87);
-    padding: 34px;
-    padding-top: 18px;
-    padding-bottom: 18px;
-    border-radius: 70px;
+    .center h1 {
+        font-size: 46px;
+        color: white;
+        background-color: #DFC189;
+        padding: 34px;
+        padding-top: 18px;
+        padding-bottom: 18px;
+        border-radius: 70px;
+    }
+
+.highlight {
+    letter-spacing: 7px;
+    color: #02542D;
 }
 
 .chooseLog {
@@ -44,7 +53,7 @@ body {
     border-radius: 20px;
     padding-left: 0px;
     padding-right: 0px;
-    background-color: #5E3333;
+    background-color: #DFC189;
     color: white;
     font-size: 25px;
     text-decoration: none;

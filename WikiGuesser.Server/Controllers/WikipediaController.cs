@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiGuesser.Server.Models;
@@ -90,7 +92,7 @@ namespace WikiGuesser.Server.Controllers
                 }   
             }
 
-            foreach(var code in countryCodes)
+            /*foreach(var code in countryCodes)
             {
                 cities = await GetRandomCitiesFromCountry(code);
                 if (cities.Count > 0)
@@ -98,7 +100,11 @@ namespace WikiGuesser.Server.Controllers
                     return Ok(cities);
                 }
             }
-            return Ok(cities);
+            return Ok(cities);*/
+            Random random = new Random();
+            var citiesList = await _context.Cities.Select(x => x.Name).ToListAsync();
+            var randomCity = citiesList.OrderBy(x => random.Next()).FirstOrDefault();
+            return Ok(randomCity);
         }
 
         public async Task<List<string>> GetRandomCitiesFromCountry(string country)
