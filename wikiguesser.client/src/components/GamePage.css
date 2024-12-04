@@ -16,3 +16,24 @@ iframe {
     width: 1000px;
     height: 100vh;
 }
+
+.submitButton {
+    position: absolute;
+    z-index: 1000;
+    bottom: 5%;
+    right: 2%;
+    margin: 20px;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #DFC189;
+    color: white;
+    font-size: 25px;
+    text-decoration: none;
+    transition: transform 0.2s;
+    
+}
+
+.submitButton:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}

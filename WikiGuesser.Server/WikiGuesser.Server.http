@@ -16,3 +16,8 @@ GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/article/Leuven
 GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/cities
 
 ###
+
+
+GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/location/Paris
+
+###

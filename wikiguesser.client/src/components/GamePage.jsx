@@ -3,22 +3,36 @@ import './GamePage.css';
 import InteractiveMap from './InteractiveMap';
 
 function GamePage() {
-    const [article, setArticle] = useState(""); // Use state to track the article name
+    const [article, setArticle] = useState(""); 
+    const [location, setLocation] = useState(null);
+    const [position, setPosition] = useState(null);
 
     useEffect(() => {
-        // Fetch the article from the API
         fetch('http://localhost:5084/api/wikipedia/cities')
             .then(response => response.text())
             .then(data => {
-                // Update the state with the fetched article name
                 console.log(data);
-                setArticle(data); // Trigger a re-render
+                setArticle(data); 
             })
             .catch(error => {
-                // Handle any errors that occur during the API call
                 console.error(error);
             });
     }, []);
+
+    useEffect(() => {
+        fetch(`http://localhost:5084/api/wikipedia/location/${article}`)
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+
+                setLocation(data); 
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }, [article]);
+
+    console.log(position);
 
     return (
         <div className="gamePage">
@@ -35,7 +49,12 @@ function GamePage() {
                     <p>Loading article...</p>
                 )}
             </div>
-            <InteractiveMap />
+            <h1>{location}</h1>
+
+            <InteractiveMap position={position} setPosition={setPosition} />
+            <a className="submitButton" id="submitButton">
+                Submit
+            </a>
         </div>
     );
 }

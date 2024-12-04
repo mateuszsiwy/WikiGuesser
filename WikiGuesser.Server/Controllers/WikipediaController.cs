@@ -74,7 +74,7 @@ namespace WikiGuesser.Server.Controllers
 
             if (_context.Countries.Count() == 0)
             {
-                foreach(var code in countryCodes)
+                foreach (var code in countryCodes)
                 {
                     cities = await GetRandomCitiesFromCountry(code);
                     if (cities.Count > 0)
@@ -82,14 +82,14 @@ namespace WikiGuesser.Server.Controllers
                         var country = new Country { Name = code };
                         _context.Countries.Add(country);
                         await _context.SaveChangesAsync();
-                        foreach(var city in cities)
+                        foreach (var city in cities)
                         {
                             var newCity = new City { Name = city, CountryId = country.Id };
                             _context.Cities.Add(newCity);
                         }
                         await _context.SaveChangesAsync();
                     }
-                }   
+                }
             }
 
             /*foreach(var code in countryCodes)
@@ -118,7 +118,7 @@ namespace WikiGuesser.Server.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    JObject json = JObject.Parse(content); 
+                    JObject json = JObject.Parse(content);
                     var cities = json["geonames"].Select(x => x["name"].ToString()).ToList();
 
                     Random random = new Random();
@@ -136,5 +136,31 @@ namespace WikiGuesser.Server.Controllers
         }
 
 
+        [HttpGet("location/{city}")]
+        public async Task<IActionResult> GetLocation(string city)
+        {
+            var url = $"http://api.geonames.org/searchJSON?q={city}&maxRows=1&username=msiwy";
+
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    JObject json = JObject.Parse(content);
+                    var location = json["geonames"].Select(x => new { lat = x["lat"].ToString(), lng = x["lng"].ToString() }).FirstOrDefault();
+                    return Ok(location);
+                }
+                else
+                {
+                    return NotFound("Lokalizacja nie została znaleziona.");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Błąd podczas pobierania lokalizacji.");
+            }
+        }
     }
 }

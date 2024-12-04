@@ -18,6 +18,12 @@
 }
 
 .gameModesContainer {
+/*    background-color: black;
+    padding: 20px;
+    margin-left: 200px;
+    margin-right: 200px;
+    border-radius: 10px;*/
+    
     display: flex;
     flex-direction: row;
     justify-content: center;
