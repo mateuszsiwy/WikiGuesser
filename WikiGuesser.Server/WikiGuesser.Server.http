@@ -18,6 +18,14 @@ GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/cities
 ###
 
 
-GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/location/Paris
+GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/location/Bogota
+
+###
+
+
+GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/citydesc/Bogota
+###
+
+GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/citydesc/Paris/weather
 
 ###

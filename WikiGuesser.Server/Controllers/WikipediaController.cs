@@ -149,7 +149,7 @@ namespace WikiGuesser.Server.Controllers
                 {
                     var content = await response.Content.ReadAsStringAsync();
                     JObject json = JObject.Parse(content);
-                    var location = json["geonames"].Select(x => new { lat = x["lat"].ToString(), lng = x["lng"].ToString() }).FirstOrDefault();
+                    var location = json["geonames"].Select(x => new { lat = x["lat"].ToString(), lng = x["lng"].ToString(), countryName = x["countryName"].ToString() }).FirstOrDefault();
                     return Ok(location);
                 }
                 else
@@ -162,5 +162,60 @@ namespace WikiGuesser.Server.Controllers
                 return StatusCode(500, "Błąd podczas pobierania lokalizacji.");
             }
         }
+
+        [HttpGet("citydesc/{id}")]
+        public async Task<IActionResult> GetDesc(string id)
+        {
+            var url = $"https://en.wikipedia.org/api/rest_v1/page/summary/{id}";
+
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    JObject json = JObject.Parse(content);
+                    var extract = json["extract_html"].ToString();
+                    return Ok(extract);
+                }
+                else
+                {
+                    return NotFound("Strona nie została znaleziona.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd podczas pobierania danych: {ex.Message}");
+            }
+        }
+
+        [HttpGet("citydesc/{city}/weather")]
+        public async Task<IActionResult> GetWeather(string city)
+        {
+            var url = $"http://api.weatherapi.com/v1/current.json?key=214f2be23ac3438b9c7151949240512&q={city}&aqi=no";
+
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    
+                    var content = await response.Content.ReadAsStringAsync();
+                    return Ok(content);
+                }
+                else
+                {
+                    return NotFound(response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Błąd podczas pobierania danych: {ex.Message}");
+            }
+            
+        }
+
     }
 }

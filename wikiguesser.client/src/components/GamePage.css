@@ -9,12 +9,16 @@
 }
 
 
-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1000px;
-    height: 100vh;
+.articleWindow{
+    position: fixed;
+    top: 5%;
+    left: 5%;
+    width: 40%;
+
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 .submitButton {
