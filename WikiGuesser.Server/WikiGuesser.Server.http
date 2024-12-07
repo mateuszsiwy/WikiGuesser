@@ -17,15 +17,34 @@ GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/cities
 
 ###
 
-
 GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/location/Bogota
 
 ###
-
 
 GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/citydesc/Bogota
 ###
 
 GET {{WikiGuesser.Server_HostAddress}}/api/wikipedia/citydesc/Paris/weather
+
+###
+
+POST {{WikiGuesser.Server_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "MaksMatol",
+  "email": "maksymilianswiatek@gmail.com",
+  "password": "sKIBIDI12!"
+}
+
+###
+
+POST {{WikiGuesser.Server_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "maksymilianswiatek@gmail.com",
+  "password": "sKIBIDI12!"
+}
 
 ###

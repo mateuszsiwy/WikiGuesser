@@ -1,8 +1,10 @@
 ﻿
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 namespace WikiGuesser.Server.Models
 {
-    public class WikiGuesserDbContext : DbContext
+    public class WikiGuesserDbContext : IdentityDbContext<IdentityUser>
     {
         public WikiGuesserDbContext(DbContextOptions<WikiGuesserDbContext> options) : base(options)
         {

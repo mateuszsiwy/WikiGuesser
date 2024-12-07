@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import GamePage from './components/GamePage';
 import GameModesPage from './components/gamemodes/GameModesPage';
+import Login from './components/Login';
 
 function App() {
     console.log("App is rendered");
@@ -13,6 +14,7 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/gamemodes/game" element={<GamePage />} />
                 <Route path="/gamemodes" element={<GameModesPage />} /> 
+                <Route path="/login" element={<Login />} />
             </Routes>
         </Router>
     );

@@ -8,8 +8,8 @@ function GamePage() {
     const [position, setPosition] = useState(null);
     const [cityDesc, setCityDesc] = useState("");
     const [weather, setWeather] = useState(null);
-
-    // Funkcja pomocnicza do pobierania danych
+    const [timezone, setTimezone] = useState(null);
+    const [submitted, setSubmitted] = useState(false);
     const fetchData = async () => {
         try {
             // Pobierz artyku³
@@ -21,7 +21,7 @@ function GamePage() {
             let cityDescResponse = await fetch(`http://localhost:5084/api/wikipedia/citydesc/${articleData}`);
             let cityDescData = await cityDescResponse.text();
 
-            while (!cityDescResponse.ok || cityDescData == "Strona nie zosta³a znaleziona.") {
+            while (!cityDescResponse.ok || cityDescData == "Strona nie zosta³a znaleziona." || cityDescData.includes("may refer to") || cityDescData.includes("usually refers to") || cityDescData.includes("may mean")) {
                 articleResponse = await fetch('http://localhost:5084/api/wikipedia/cities');
                 articleData = await articleResponse.text();
 
@@ -33,14 +33,14 @@ function GamePage() {
 
             // Pobierz lokalizacjê
             const locationResponse = await fetch(`http://localhost:5084/api/wikipedia/location/${articleData}`);
-            const locationData = await locationResponse.json(); // Zmienione na JSON
+            const locationData = await locationResponse.json(); 
             setLocation(locationData);
 
             // Pobierz dane pogodowe
             const weatherResponse = await fetch(`http://localhost:5084/api/wikipedia/citydesc/${articleData}/weather`);
             const weatherData = await weatherResponse.json();
             setWeather(weatherData.current.temp_c);
-
+            setTimezone(weatherData.location.localtime);
             
             
 
@@ -54,7 +54,6 @@ function GamePage() {
         }
     };
 
-    // Wywo³aj fetchData przy renderowaniu komponentu
     useEffect(() => {
         fetchData();
     }, []);
@@ -66,13 +65,14 @@ function GamePage() {
                     <>
                         <div dangerouslySetInnerHTML={{ __html: cityDesc }}></div>
                         <p>Temperature: {weather}C</p>
+                        <p>Timezone: {timezone}</p>
                     </>
                 ) : (
                     <p>Loading article...</p>
                 )}
             </div>
-            <InteractiveMap position={position} setPosition={setPosition} />
-            <button className="submitButton" id="submitButton" onClick={() => console.log('Submit clicked')}>
+            <InteractiveMap position={position} setPosition={setPosition} submitted={submitted} location={location} />
+            <button className="submitButton" id="submitButton" onClick={() => setSubmitted(true)}>
                 Submit
             </button>
         </div>
