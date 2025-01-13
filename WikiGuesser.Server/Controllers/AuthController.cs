@@ -36,12 +36,13 @@ namespace WikiGuesser.Server.Controllers
             var result = await _userManager.CreateAsync(user, register.Password);
             if (result.Succeeded)
             {
-                return Ok("user succesfully registered");
+                return Ok(new { Message = "User successfully registered" });
             }
             else
             {
-                return BadRequest(result.Errors);
-            }   
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                return BadRequest(new { Errors = errors });
+            }
         }
 
        
