@@ -30,13 +30,15 @@ const InteractiveMap = ({ position, setPosition, submitted, location, onScoreUpd
         
         const map = useMapEvents({
             click(e) {
-                setPosition(e.latlng);
-                const dist = calculateDistance(e.latlng, location);
-                setDistance(dist);
-                const points = calculateScore(dist);
-                setScore(points);
-                onScoreUpdate(points, dist);
-                console.log("Distance: ", dist, "Score: ", points);
+                if(!submitted){
+                    setPosition(e.latlng);
+                    const dist = calculateDistance(e.latlng, location);
+                    setDistance(dist);
+                    const points = calculateScore(dist);
+                    setScore(points);
+                    onScoreUpdate(points, dist);
+                    console.log("Distance: ", dist, "Score: ", points);
+                }
             }
         });
 
@@ -53,7 +55,7 @@ const InteractiveMap = ({ position, setPosition, submitted, location, onScoreUpd
                 [position.lat, position.lng],
                 [location.lat, location.lng]
             ];
-            map.fitBounds(bounds, { padding: [50, 50] }); // Automatyczne dopasowanie widoku
+            map.fitBounds(bounds, { padding: [50, 50] });
         }
     }, [submitted, position, location]);
 

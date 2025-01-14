@@ -1,0 +1,20 @@
+
+
+.roundInfo{
+    position: fixed;
+    bottom: 5%;
+    left: 5%;
+    /* width: 0%; */
+    display: flex;
+    
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    overflow-y: auto;
+    justify-content: space-between;
+
+    p{
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
