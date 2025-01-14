@@ -1,10 +1,23 @@
+.userWindow {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    color: #333;
+    z-index: 1000;
+}
+
 .gamePage {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     min-height: 100vh;
-    background-image: url('../assets/books.jpeg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../assets/background_mountains.png');
     background-size: cover;
 }
 
@@ -40,4 +53,20 @@
 .submitButton:hover {
     transform: scale(1.1);
     cursor: pointer;
+}
+
+.scoreWindow {
+    position: absolute;
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    color: #333;
+    z-index: 1000;
+    filter: unset;
 }

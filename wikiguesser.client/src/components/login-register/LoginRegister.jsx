@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import './LoginRegister.css';
+import { useNavigate } from 'react-router-dom';
 import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa'; 
+import { jwtDecode } from 'jwt-decode';
 
-function LoginRegister() {
 
+function LoginRegister({ setUsername }) {
+
+    const navigate = useNavigate();
     const [action, setAction] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const registerLink = () => {
@@ -17,7 +21,7 @@ function LoginRegister() {
 
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
-        alert('Login form submitted');
+        console.log('Login form submitted');
         const response = await fetch(`http://localhost:5084/api/auth/login`, {
             method: 'POST',
             headers: {
@@ -28,7 +32,23 @@ function LoginRegister() {
                 password: e.target[1].value
             })
         });
-        console.log(response);
+        if (response.ok) {
+            console.log('Login successful');
+            const result = await response.json();
+            console.log(result);
+            const decodedToken = jwtDecode(result.token);
+            console.log(decodedToken);
+            setUsername(result.username);
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('username', result.username);
+            navigate('/');
+        } else {
+            const result = await response.json();
+            console.log(result);
+            setErrorMessage(result[0].description);
+            console.log(errorMessage);
+            console.log('Login failed');
+        }
     }
 
     const handleRegisterSubmit = async (e) => {
@@ -50,6 +70,8 @@ function LoginRegister() {
         });
         if (response.ok) {
             console.log('Registration successful');
+            alert('Registration successful');
+            navigate('/login');
         } else {
             const result = await response.json();
             console.log(result);

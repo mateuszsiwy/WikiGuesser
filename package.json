@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "env": "^0.0.2",
     "leaflet": "^1.9.4",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.28.0"

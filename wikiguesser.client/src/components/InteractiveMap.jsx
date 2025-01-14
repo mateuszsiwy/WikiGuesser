@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Polyline } from 'react-leaflet';
 
-const InteractiveMap = ({ position, setPosition, submitted, location }) => {
+const InteractiveMap = ({ position, setPosition, submitted, location, onScoreUpdate }) => {
     const [distance, setDistance] = useState(null);
     const [score, setScore] = useState(null);
     const mapRef = useRef(null);
@@ -35,6 +35,7 @@ const InteractiveMap = ({ position, setPosition, submitted, location }) => {
                 setDistance(dist);
                 const points = calculateScore(dist);
                 setScore(points);
+                onScoreUpdate(points, dist);
                 console.log("Distance: ", dist, "Score: ", points);
             }
         });
@@ -59,16 +60,16 @@ const InteractiveMap = ({ position, setPosition, submitted, location }) => {
     return (
         <div>
             <MapContainer
-                center={[51.505, -0.09]} // Domyœlne wspó³rzêdne
-                zoom={13}                // Poziom zoomu
+                center={[51.505, -0.09]} // Domyï¿½lne wspï¿½rzï¿½dne
+                zoom={6}                // Poziom zoomu
                 style={{ height: "90%", width: "40%", position: "absolute", top: "5%", left: "58%" }}
                 whenCreated={mapInstance => {
                     mapRef.current = mapInstance;
                 }}
             >
                 <TileLayer
-                    url="https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}"
-                    attribution="Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+                    url="https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=Mq3JD1tc90o3DGNaxqEO"
+                    attribution="Tiles &copy; MapTiler &copy; OpenStreetMap contributors"
                 />
                 <LocationMarker />
 
@@ -88,12 +89,12 @@ const InteractiveMap = ({ position, setPosition, submitted, location }) => {
                 )}
             </MapContainer>
 
-            {submitted && distance !== null && (
+            {/* {submitted && distance !== null && (
                 <div style={{ position: "absolute", top: "10%", left: "5%", fontSize: "20px", color: "black" }}>
-                    <p>Odleg³oœæ: {distance.toFixed(2)} km</p>
+                    <p>Odlegï¿½oï¿½ï¿½: {distance.toFixed(2)} km</p>
                     <p>Punkty: {score}</p>
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

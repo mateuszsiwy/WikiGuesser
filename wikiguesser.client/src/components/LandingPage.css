@@ -3,6 +3,19 @@ body {
     font-family: 'Roboto Mono', monospace;
 }
 
+.userWindow {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    color: #333;
+}
+
+
 .mainPage {
     background-image: url('../assets/nature-3507.gif');
     background-size: cover;
