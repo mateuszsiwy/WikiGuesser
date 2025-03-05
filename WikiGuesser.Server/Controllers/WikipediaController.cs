@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiGuesser.Server.Models;
+
 namespace WikiGuesser.Server.Controllers
 {
     [Route("api/[controller]")]
