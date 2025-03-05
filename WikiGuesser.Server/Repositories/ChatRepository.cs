@@ -21,6 +21,14 @@ public class ChatRepository : IChatRepository
             Chat? chat = await GetChat(chatName);
             if (chat == null)
             {
+                var createdChat = _context.Chats.Add(new Chat
+                {
+                    ChatId = Guid.NewGuid(),
+                    ChatName = chatName,
+                    CreatedAt = DateTime.Now,
+                    Messages = new List<Message>()
+                });
+                return createdChat.Entity;
                 throw new Exception("Chat not found");
             }
 
@@ -53,6 +61,9 @@ public class ChatRepository : IChatRepository
 
     private async Task<Chat?> GetChat(string chatName)
     {
-        return await _context.Chats.Where(c => c.ChatName == chatName).Include(c => c.Messages).ThenInclude(c => c.Sender).FirstOrDefaultAsync();
-    }
+        return await _context.Chats
+            .Where(c => c.ChatName == chatName)
+            .Include(c => c.Messages)
+            .ThenInclude(m => m.Sender)
+            .FirstOrDefaultAsync();    }
 }

@@ -1,4 +1,6 @@
-﻿namespace WikiGuesser.Server.Models;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace WikiGuesser.Server.Models;
 
 public class Message
 {
@@ -8,5 +10,5 @@ public class Message
     public string MessageText { get; set; }
     public DateTime CreatedAt { get; set; }
     public Chat Chat { get; set; }
-    public string Sender { get; set; }
+    public IdentityUser Sender { get; set; }
 }

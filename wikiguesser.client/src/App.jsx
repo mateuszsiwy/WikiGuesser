@@ -4,6 +4,7 @@ import LandingPage from './components/LandingPage';
 import GamePage from './components/GamePage';
 import GameModesPage from './components/gamemodes/GameModesPage';
 import LoginRegister from './components/login-register/LoginRegister';
+import ChatComponent from "./components/ChatComponent.jsx";
 
 function App() {
     console.log("App is rendered");
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/gamemodes/game" element={<GamePage username={username}/>} />
                 <Route path="/gamemodes" element={<GameModesPage />} /> 
                 <Route path="/login" element={<LoginRegister setUsername={setUsername} />} />
+                <Route path="/chat" element={<ChatComponent />} />
             </Routes>
         </Router>
     );

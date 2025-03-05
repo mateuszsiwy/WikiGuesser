@@ -2,7 +2,7 @@
 
 const createSignalRConnection = (token) => {
     const connection = new HubConnectionBuilder()
-        .withUrl('https://localhost:7099/messageHub', {
+        .withUrl('http://localhost:5084/chatHub', {
             accessTokenFactory: () => token,
         })
         .configureLogging(LogLevel.Information)

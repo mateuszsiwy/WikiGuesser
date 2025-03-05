@@ -8,12 +8,18 @@ public class UserConnectionService
     
     public void AddConnection(string username, string connectionId)
     {
-        _userConnections.TryAdd(username, connectionId);
+        if (!string.IsNullOrEmpty(username))
+        {
+            _userConnections[username] = connectionId;
+        }
     }
 
     public void RemoveConnection(string username)
     {
-        _userConnections.TryRemove(username, out var connectionId);
+        if(!string.IsNullOrEmpty(username))
+        {
+            _userConnections.TryRemove(username, out _);
+        }
     }
     
     

@@ -5,6 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using WikiGuesser.Server.Hubs;
+using WikiGuesser.Server.Interfaces.Repositories;
+using WikiGuesser.Server.Interfaces.Services;
+using WikiGuesser.Server.Repositories;
+using WikiGuesser.Server.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,9 +33,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", builder =>
     {
-        builder.AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin();
+        builder.WithOrigins("http://localhost:5173")
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
     });
 });
 
@@ -53,7 +58,12 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
-
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IChatRepository, ChatRepository>();
+/*services.AddTransient<IAuthService, AuthService>();*/
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IChatService, ChatService>();
+builder.Services.AddSingleton(new UserConnectionService());
 builder.Services.AddSignalR();
 
 var app = builder.Build();

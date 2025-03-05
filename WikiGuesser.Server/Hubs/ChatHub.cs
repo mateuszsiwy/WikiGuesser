@@ -8,18 +8,19 @@ using WikiGuesser.Server.Services;
 namespace WikiGuesser.Server.Hubs;
 
 
-[Authorize]
 public class ChatHub : Hub
 {
         private readonly UserConnectionService _userConnectionService;
         private readonly IChatService _chatService;
+        private readonly IUserService _userService;
         private string _username => Context.User.Identity?.Name;
         
         
-        public ChatHub(UserConnectionService userConnectionService, IChatService chatService)
+        public ChatHub(UserConnectionService userConnectionService, IChatService chatService, IUserService userService)
         {
                 _userConnectionService = userConnectionService;
                 _chatService = chatService;
+                _userService = userService;
         }
 
         public override async Task OnConnectedAsync()
@@ -36,13 +37,14 @@ public class ChatHub : Hub
                 await base.OnDisconnectedAsync(exception);
         }
         
-        public async Task SendMessage(string chatName, string message)
+        public async Task SendMessageToChat(string chatName, string message)
         {
                 Chat chat = await _chatService.GetChatWithMessages(chatName);
+                var sender = await _userService.GetUser(_username);
                 Message newMessage = new Message
                 {
                         Chat = chat,
-                        Sender = _username,
+                        Sender = sender,
                         MessageText = message
                 };
                 await _chatService.saveMessage(newMessage);

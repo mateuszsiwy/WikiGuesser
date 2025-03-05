@@ -108,6 +108,7 @@ namespace WikiGuesser.Server.Controllers
             return Ok(randomCity);
         }
 
+        [HttpGet("cities/{country}")]
         public async Task<List<string>> GetRandomCitiesFromCountry(string country)
         {
             var url = $"http://api.geonames.org/searchJSON?country={country}&featureClass=P&maxRows=100&username=msiwy";
