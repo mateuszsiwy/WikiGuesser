@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using WikiGuesser.Server.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-/*builder.Services.AddSwaggerGen();*/
+builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddDbContext<WikiGuesserDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -53,21 +54,25 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseCors("AllowFrontend");
 // Configure the HTTP request pipeline.
-/*if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}*/
+}
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllers();
 

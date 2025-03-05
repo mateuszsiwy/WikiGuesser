@@ -13,6 +13,9 @@ namespace WikiGuesser.Server.Models
         public DbSet<City> Cities { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Section> Sections { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<User> Users { get; set; }
     }
     
 }
