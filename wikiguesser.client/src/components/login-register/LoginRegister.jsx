@@ -1,28 +1,31 @@
 import React, { useState } from 'react';
-import './LoginRegister.css';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa'; 
+import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import { jwtDecode } from 'jwt-decode';
-
+import createSignalRConnection from '../../services/signalRService'; // Import funkcji SignalR
+import './LoginRegister.css';
 
 function LoginRegister({ setUsername }) {
-
     const navigate = useNavigate();
     const [action, setAction] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [connection, setConnection] = useState(null); // Przechowujemy połączenie SignalR
+
     const registerLink = () => {
-        setAction(' active')
+        setAction(' active');
         setErrorMessage('');
-    }
+    };
+
     const loginLink = () => {
         setAction('');
         setErrorMessage('');
-    }
+    };
 
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
         console.log('Login form submitted');
-        const response = await fetch(`http://localhost:5084/api/auth/login`, {
+
+        const response = await fetch('http://localhost:5084/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,32 +35,41 @@ function LoginRegister({ setUsername }) {
                 password: e.target[1].value
             })
         });
+
         if (response.ok) {
             console.log('Login successful');
             const result = await response.json();
             console.log(result);
+
             const decodedToken = jwtDecode(result.token);
-            console.log(decodedToken);
+            console.log('Decoded Token:', decodedToken);
+
             setUsername(result.username);
             localStorage.setItem('token', result.token);
             localStorage.setItem('username', result.username);
+
+            // Tworzenie połączenia SignalR
+            const newConnection = createSignalRConnection(result.token);
+            setConnection(newConnection);
+
+            newConnection
+                .start()
+                .then(() => console.log("✅ SignalR połączenie nawiązane"))
+                .catch(err => console.error("❌ Błąd połączenia SignalR:", err));
+
             navigate('/');
         } else {
             const result = await response.json();
             console.log(result);
-            setErrorMessage(result[0].description);
-            console.log(errorMessage);
-            console.log('Login failed');
+            setErrorMessage(result[0]?.description || 'Login failed');
         }
-    }
+    };
 
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         console.log('Register form submitted');
-        console.log(e.target[0].value);
-        console.log(e.target[1].value);
-        console.log(e.target[2].value);
-        const response = await fetch(`http://localhost:5084/api/auth/register`, {
+
+        const response = await fetch('http://localhost:5084/api/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,6 +80,7 @@ function LoginRegister({ setUsername }) {
                 password: e.target[2].value
             })
         });
+
         if (response.ok) {
             console.log('Registration successful');
             alert('Registration successful');
@@ -75,14 +88,11 @@ function LoginRegister({ setUsername }) {
         } else {
             const result = await response.json();
             console.log(result);
-            setErrorMessage(result[0].description);
-            console.log(errorMessage);
-            console.log('Registration failed');
+            setErrorMessage(result[0]?.description || 'Registration failed');
         }
-    }
+    };
 
     return (
-        <>
         <div className="mainPage">
             <div className={`wrapper${action}`}>
                 <div className="form-box login">
@@ -103,7 +113,7 @@ function LoginRegister({ setUsername }) {
                         </div>
                         <button type="submit">Login</button>
                         <div className="register-link">
-                            <p>Don't have an account? <a href="#" onClick={registerLink }>Register</a></p>
+                            <p>Don't have an account? <a href="#" onClick={registerLink}>Register</a></p>
                         </div>
                     </form>
                 </div>
@@ -130,13 +140,12 @@ function LoginRegister({ setUsername }) {
                         </div>
                         <button type="submit">Register</button>
                         <div className="register-link">
-                            <p>Already have an account? <a href="#" onClick={ loginLink }>Login</a></p>
+                            <p>Already have an account? <a href="#" onClick={loginLink}>Login</a></p>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        </>
     );
 }
 
