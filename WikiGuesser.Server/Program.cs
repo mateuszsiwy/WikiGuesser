@@ -67,7 +67,8 @@ builder.Services.AddAuthentication(options =>
             var accessToken = context.Request.Query["access_token"];
 
             if (!string.IsNullOrEmpty(accessToken) &&
-                context.HttpContext.Request.Path.StartsWithSegments("/chatHub"))
+                (context.HttpContext.Request.Path.StartsWithSegments("/chatHub") ||
+                context.HttpContext.Request.Path.StartsWithSegments("/lobbyHub")))
             {
                 context.Token = accessToken;
             }

@@ -29,4 +29,15 @@ public class UserRepository : IUserRepository
         };*/
         return identityUser;
     }
+    
+    public async Task<IdentityUser> GetUserById(string id)
+    {
+        var identityUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (identityUser == null)
+        {
+            throw new Exception("User not found");
+        }
+
+        return identityUser;
+    }
 }

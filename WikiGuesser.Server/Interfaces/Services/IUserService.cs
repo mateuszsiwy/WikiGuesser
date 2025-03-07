@@ -6,5 +6,6 @@ namespace WikiGuesser.Server.Interfaces.Services;
 public interface IUserService
 {
     Task<IdentityUser> GetUser(string username);
+    Task<string> GetUserNameById(string id);
 
 }

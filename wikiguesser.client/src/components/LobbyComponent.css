@@ -1,0 +1,171 @@
+﻿.lobby-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.create-lobby {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.create-lobby input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px 0 0 4px;
+    border: 1px solid #ccc;
+}
+
+.create-lobby button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.lobby-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.lobby-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.lobby-info {
+    flex: 1;
+}
+
+.lobby-item button {
+    padding: 8px 15px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.lobby-item button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Lobby Detail View */
+.lobby-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.lobby-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.lobby-content {
+    display: flex;
+    gap: 20px;
+}
+
+.players-section, .chat-section {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.players-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.player {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.player.ready {
+    color: #4CAF50;
+}
+
+.controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.ready-btn {
+    padding: 10px 20px;
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.ready-btn.active {
+    background-color: #4CAF50;
+}
+
+.start-btn {
+    padding: 10px 20px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.start-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.messages {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.message {
+    margin-bottom: 8px;
+}
+
+.message-input {
+    display: flex;
+}
+
+.message-input input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px 0 0 4px;
+    border: 1px solid #ccc;
+}
+
+.message-input button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}

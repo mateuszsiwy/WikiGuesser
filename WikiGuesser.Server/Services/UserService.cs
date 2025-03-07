@@ -18,4 +18,10 @@ public class UserService : IUserService
     {
         return await _userRepository.GetUser(username);
     }
+    
+    public async Task<string> GetUserNameById(string id)
+    {
+        var user = await _userRepository.GetUserById(id);
+        return user.UserName;
+    }
 }

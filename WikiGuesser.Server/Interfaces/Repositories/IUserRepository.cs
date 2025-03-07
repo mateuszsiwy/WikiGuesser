@@ -6,4 +6,5 @@ namespace WikiGuesser.Server.Interfaces.Repositories;
 public interface IUserRepository
 {
     Task<IdentityUser> GetUser(string username);
+    Task<IdentityUser> GetUserById(string id);
 }

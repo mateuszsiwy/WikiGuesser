@@ -1,10 +1,11 @@
 ﻿import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
-const createSignalRConnection = (token) => {
+
+const createLobbyConnection = (token) => {
     console.log("🔹 Token JWT przekazany do SignalR:", token);
 
     const connection = new HubConnectionBuilder()
-        .withUrl('http://localhost:5084/chatHub', {
+        .withUrl('http://localhost:5084/lobbyHub', {
             accessTokenFactory: () => {
                 console.log("📡 Wysyłanie tokena JWT do SignalR...");
                 return token;
@@ -18,5 +19,4 @@ const createSignalRConnection = (token) => {
 };
 
 
-
-export default createSignalRConnection;
+export default createLobbyConnection;

@@ -61,8 +61,11 @@ public class LobbyHub : Hub
         var lobby = await _lobbyService.CreateLobby(lobbyName, user.Id);
         
         await Groups.AddToGroupAsync(Context.ConnectionId, lobby.LobbyId.ToString());
-        await Clients.All.SendAsync("LobbyCreated", lobby);
+        var lobbyDTO = ConvertToLobbyDTO(lobby);
+        await Clients.All.SendAsync("LobbyCreated", lobbyDTO);
     }
+    
+    
 
     public async Task JoinLobby(Guid lobbyId)
     {
@@ -139,5 +142,26 @@ public class LobbyHub : Hub
         };
 
         await Clients.Group(lobbyId.ToString()).SendAsync("ReceiveLobbyMessage", user.UserName, message);
+    }
+    
+    private LobbyDTO ConvertToLobbyDTO(Lobby lobby)
+    {
+        return new LobbyDTO
+        {
+            LobbyId = lobby.LobbyId,
+            Name = lobby.Name,
+            OwnerId = lobby.OwnerId,
+            IsActive = lobby.IsActive,
+            GameState = lobby.GameState,
+            ChatId = lobby.ChatId,
+            Players = lobby.Players.Select(p => new PlayerDTO
+            {
+                PlayerId = p.PlayerId,
+                UserId = p.UserId,
+                UserName = _userService.GetUserNameById(p.UserId).Result, // Get username
+                IsReady = p.IsReady,
+                Score = p.Score
+            }).ToList()
+        };
     }
 }

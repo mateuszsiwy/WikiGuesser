@@ -37,23 +37,14 @@ public class LobbyService : ILobbyService
         {
             throw new ArgumentException("Lobby name cannot be empty", nameof(name));
         }
-
+    
         var user = await _lobbyRepository.GetUserAsync(ownerId);
         if (user == null)
         {
             _logger.LogWarning("User with ID {UserId} not found when creating lobby", ownerId);
             throw new KeyNotFoundException($"User with ID {ownerId} not found");
         }
-
-        var newPlayer = new Player
-        {
-            PlayerId = Guid.NewGuid(),
-            UserId = ownerId,
-            IsReady = false,
-            Score = 0
-        };
-        await _lobbyRepository.AddPlayerAsync(newPlayer);
-
+    
         var newChat = new Chat
         {
             ChatId = Guid.NewGuid(),
@@ -62,7 +53,7 @@ public class LobbyService : ILobbyService
             Messages = new List<Message>()
         };
         await _lobbyRepository.AddChatAsync(newChat);
-
+    
         var newLobby = new Lobby
         {
             LobbyId = Guid.NewGuid(),
@@ -71,10 +62,25 @@ public class LobbyService : ILobbyService
             IsActive = true,
             GameState = GameState.WaitingForPlayers,
             ChatId = newChat.ChatId,
-            Players = new List<Player> { newPlayer }
+            Players = new List<Player>()
         };
         
-        return await _lobbyRepository.AddLobbyAsync(newLobby);
+        var savedLobby = await _lobbyRepository.AddLobbyAsync(newLobby);
+    
+        var newPlayer = new Player
+        {
+            PlayerId = Guid.NewGuid(),
+            UserId = ownerId,
+            LobbyId = savedLobby.LobbyId,
+            IsReady = false,
+            Score = 0
+        };
+        
+        await _lobbyRepository.AddPlayerAsync(newPlayer);
+        
+        savedLobby.Players.Add(newPlayer);
+        
+        return await _lobbyRepository.UpdateLobbyAsync(savedLobby);
     }
 
     public async Task<Lobby> JoinLobby(Guid lobbyId, string userId)
@@ -102,6 +108,7 @@ public class LobbyService : ILobbyService
         {
             PlayerId = Guid.NewGuid(),
             UserId = userId,
+            LobbyId = lobbyId,
             IsReady = false,
             Score = 0
         };
