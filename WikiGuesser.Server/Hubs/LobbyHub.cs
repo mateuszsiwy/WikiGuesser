@@ -79,7 +79,8 @@ public class LobbyHub : Hub
         
         await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId.ToString());
         var updatedLobby = await _lobbyService.GetLobby(lobbyId);
-        await Clients.All.SendAsync("UserJoined", username, updatedLobby);
+        var lobbyDTO = ConvertToLobbyDTO(updatedLobby);
+        await Clients.All.SendAsync("UserJoined", username, lobbyDTO);
     }
 
     public async Task LeaveLobby(Guid lobbyId)
@@ -93,7 +94,8 @@ public class LobbyHub : Hub
         await _lobbyService.LeaveLobby(lobbyId, user.Id);
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId.ToString());
         var updatedLobby = await _lobbyService.GetLobby(lobbyId);
-        await Clients.All.SendAsync("UserLeft", username, updatedLobby);
+        var lobbyDTO = ConvertToLobbyDTO(updatedLobby);
+        await Clients.All.SendAsync("UserLeft", username, lobbyDTO);
     }
     
     public async Task SetReady(Guid lobbyId, bool ready)
@@ -111,6 +113,7 @@ public class LobbyHub : Hub
     public async Task StartGame(Guid lobbyId)
     {
         await _lobbyService.StartGame(lobbyId);
+        
         await Clients.All.SendAsync("GameStarted", lobbyId);
     }
 
@@ -152,7 +155,7 @@ public class LobbyHub : Hub
             Name = lobby.Name,
             OwnerId = lobby.OwnerId,
             IsActive = lobby.IsActive,
-            GameState = lobby.GameState,
+            GameState = lobby.GameState.ToString(),
             ChatId = lobby.ChatId,
             Players = lobby.Players.Select(p => new PlayerDTO
             {

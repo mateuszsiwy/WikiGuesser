@@ -83,6 +83,7 @@ const LobbyComponent = () => {
                 if (response.ok) {
                     const data = await response.json();
                     setLobbies(data);
+                    console.log(data);
                 } else {
                     console.error("Failed to fetch lobbies:", response.statusText);
                 }
@@ -181,7 +182,6 @@ const LobbyComponent = () => {
         }
     };
 
-    // Render lobby list view
     if (!currentLobby) {
         return (
             <div className="lobby-container">
@@ -247,7 +247,6 @@ const LobbyComponent = () => {
                             {isReady ? 'Not Ready' : 'Ready'}
                         </button>
                         
-                        {/* Only show Start Game button to lobby owner */}
                         {localStorage.getItem('username') === currentLobby.players.find(p => p.userId === currentLobby.ownerId)?.userName && (
                             <button 
                                 onClick={startGame} 

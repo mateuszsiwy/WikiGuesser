@@ -8,7 +8,7 @@ public class LobbyDTO
     public string Name { get; set; }
     public string OwnerId { get; set; }
     public bool IsActive { get; set; }
-    public GameState GameState { get; set; }
+    public string GameState { get; set; }
     public Guid ChatId { get; set; }
     public List<PlayerDTO> Players { get; set; } = new List<PlayerDTO>();
 }

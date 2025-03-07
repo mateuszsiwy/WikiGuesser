@@ -47,7 +47,7 @@ public class LobbyController : ControllerBase
                 Name = lobby.Name,
                 OwnerId = lobby.OwnerId,
                 IsActive = lobby.IsActive,
-                GameState = lobby.GameState,
+                GameState = lobby.GameState.ToString(),
                 ChatId = lobby.ChatId,
                 Players = playerDTOs
             });
