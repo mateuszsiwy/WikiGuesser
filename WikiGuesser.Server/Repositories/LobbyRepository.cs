@@ -1,52 +1,81 @@
-﻿using WikiGuesser.Server.Interfaces.Repositories;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using WikiGuesser.Server.Hubs;
+using WikiGuesser.Server.Interfaces.Repositories;
 using WikiGuesser.Server.Models;
 
 namespace WikiGuesser.Server.Repositories;
 
 public class LobbyRepository : ILobbyRepository
 {
-    public Task<List<Lobby>> GetLobbies()
+    private readonly WikiGuesserDbContext _context;
+
+    public LobbyRepository(WikiGuesserDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public Task<Lobby> GetLobby(Guid id)
+    public async Task<List<Lobby>> GetLobbiesAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Lobbies
+            .Include(l => l.Players)
+            .ToListAsync();
     }
 
-    public Task<Lobby> CreateLobby(string name, string ownerId)
+    public async Task<Lobby> GetLobbyAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await _context.Lobbies
+            .Include(l => l.Players)
+            .FirstOrDefaultAsync(l => l.LobbyId == id);
     }
 
-    public Task<Lobby> JoinLobby(Guid lobbyId, string userId)
+    public async Task<Lobby> AddLobbyAsync(Lobby lobby)
     {
-        throw new NotImplementedException();
+        await _context.Lobbies.AddAsync(lobby);
+        await _context.SaveChangesAsync();
+        return lobby;
     }
 
-    public Task<Lobby> LeaveLobby(Guid lobbyId, string userId)
+    public async Task<Player> AddPlayerAsync(Player player)
     {
-        throw new NotImplementedException();
+        await _context.Players.AddAsync(player);
+        await _context.SaveChangesAsync();
+        return player;
     }
 
-    public Task<Lobby> SetReadyStatus(Guid lobbyId, string userId, bool ready)
+    public async Task<Lobby> UpdateLobbyAsync(Lobby lobby)
     {
-        throw new NotImplementedException();
+        _context.Lobbies.Update(lobby);
+        await _context.SaveChangesAsync();
+        return lobby;
     }
 
-    public Task<Lobby> StartGame(Guid lobbyId)
+    public async Task<Player> GetPlayerAsync(Guid playerId)
     {
-        throw new NotImplementedException();
+        return await _context.Players.FindAsync(playerId);
     }
 
-    public Task<Lobby> EndGame(Guid lobbyId)
+    public async Task<Player> GetPlayerByUserIdAsync(string userId)
     {
-        throw new NotImplementedException();
+        return await _context.Players
+            .FirstOrDefaultAsync(p => p.UserId == userId);
     }
 
-    public Task<Lobby> UpdateScore(Guid lobbyId, string userId, int score)
+    public async Task RemovePlayerAsync(Player player)
     {
-        throw new NotImplementedException();
+        _context.Players.Remove(player);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<IdentityUser> GetUserAsync(string userId)
+    {
+        return await _context.Users.FindAsync(userId);
+    }
+
+    public async Task<Chat> AddChatAsync(Chat chat)
+    {
+        await _context.Chats.AddAsync(chat);
+        await _context.SaveChangesAsync();
+        return chat;
     }
 }

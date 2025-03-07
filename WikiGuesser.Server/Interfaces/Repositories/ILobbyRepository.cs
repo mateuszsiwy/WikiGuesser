@@ -1,16 +1,18 @@
-﻿using WikiGuesser.Server.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using WikiGuesser.Server.Models;
 
 namespace WikiGuesser.Server.Interfaces.Repositories;
 
 public interface ILobbyRepository
 {
-    Task<List<Lobby>> GetLobbies();
-    Task<Lobby> GetLobby(Guid id);
-    Task<Lobby> CreateLobby(string name, string ownerId);
-    Task<Lobby> JoinLobby(Guid lobbyId, string userId);
-    Task<Lobby> LeaveLobby(Guid lobbyId, string userId);
-    Task<Lobby> SetReadyStatus(Guid lobbyId, string userId, bool ready);
-    Task<Lobby> StartGame(Guid lobbyId);
-    Task<Lobby> EndGame(Guid lobbyId);
-    Task<Lobby> UpdateScore(Guid lobbyId, string userId, int score);
+    Task<List<Lobby>> GetLobbiesAsync();
+    Task<Lobby> GetLobbyAsync(Guid id);
+    Task<Lobby> AddLobbyAsync(Lobby lobby);
+    Task<Player> AddPlayerAsync(Player player);
+    Task<Lobby> UpdateLobbyAsync(Lobby lobby);
+    Task<Player> GetPlayerAsync(Guid playerId);
+    Task<Player> GetPlayerByUserIdAsync(string userId);
+    Task RemovePlayerAsync(Player player);
+    Task<IdentityUser> GetUserAsync(string userId);
+    Task<Chat> AddChatAsync(Chat chat);
 }
