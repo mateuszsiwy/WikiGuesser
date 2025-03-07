@@ -15,6 +15,8 @@ namespace WikiGuesser.Server.Models
         public DbSet<Section> Sections { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Chat> Chats { get; set; }
+        public DbSet<Player> Players { get; set; }
+        public DbSet<Lobby> Lobbies { get; set; }
     }
     
 }
