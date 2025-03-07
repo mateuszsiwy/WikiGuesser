@@ -82,6 +82,8 @@ builder.Services.AddTransient<IChatRepository, ChatRepository>();
 /*services.AddTransient<IAuthService, AuthService>();*/
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IChatService, ChatService>();
+builder.Services.AddTransient<ILobbyRepository, LobbyRepository>();
+builder.Services.AddTransient<ILobbyService, LobbyService>();
 builder.Services.AddSingleton(new UserConnectionService());
 builder.Services.AddSignalR();
 
@@ -102,6 +104,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<LobbyHub>("/lobbyHub");
 
 app.MapControllers();
 
