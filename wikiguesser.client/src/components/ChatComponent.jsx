@@ -39,7 +39,7 @@ const ChatComponent = () => {
     const sendMessage = async () => {
         if (connection) {
             try {
-                await connection.invoke('SendMessageToChat', localStorage.getItem("username"), message);
+                await connection.invoke('SendMessageToChat', "Global", message);
                 setMessage('');
             } catch (err) {
                 console.error('Error sending message: ', err);

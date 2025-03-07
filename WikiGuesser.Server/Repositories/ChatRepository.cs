@@ -16,54 +16,72 @@ public class ChatRepository : IChatRepository
 
     public async Task<Chat> GetChatWithMessages(string chatName)
     {
-        try
+        Chat? chat = await GetChat(chatName);
+        if (chat == null)
         {
-            Chat? chat = await GetChat(chatName);
-            if (chat == null)
+            var newChat = new Chat
             {
-                var createdChat = _context.Chats.Add(new Chat
-                {
-                    ChatId = Guid.NewGuid(),
-                    ChatName = chatName,
-                    CreatedAt = DateTime.Now,
-                    Messages = new List<Message>()
-                });
-                return createdChat.Entity;
-                throw new Exception("Chat not found");
-            }
-
-            return chat;
+                ChatId = Guid.NewGuid(),
+                ChatName = chatName,
+                CreatedAt = DateTime.Now,
+                Messages = new List<Message>()
+            };
+            
+            _context.Chats.Add(newChat);
+            await _context.SaveChangesAsync();
+            
+            return newChat;
         }
-        catch (Exception ex)
-        {
-            throw;
-        }
+    
+        return chat;
     }
     
     public async Task saveMessage(Message message)
     {
         try
         {
-            Chat? chat = await GetChat(message.Chat.ChatName);
+            // The issue is here. Don't use message.Chat.ChatName as it creates a circular reference
+            // Instead, first find the chat by its ID
+            var chat = await _context.Chats.FindAsync(message.ChatId);
             if (chat == null)
             {
-                throw new Exception("Chat not found");
+                throw new Exception($"Chat with ID {message.ChatId} not found");
             }
-
-            chat.Messages.Add(message);
+    
+            // Don't set the navigation properties directly
+            message.Chat = null;  // Remove circular reference
+    
+            await _context.Messages.AddAsync(message);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Error in saveMessage: {ex.Message}");
             throw;
         }
     }
 
     private async Task<Chat?> GetChat(string chatName)
     {
-        return await _context.Chats
-            .Where(c => c.ChatName == chatName)
-            .Include(c => c.Messages)
-            .ThenInclude(m => m.Sender)
-            .FirstOrDefaultAsync();    }
+        // Use EF.Functions.Collate for case-insensitive comparison
+        var chat = await _context.Chats
+            .FirstOrDefaultAsync(c => c.ChatName.Equals(chatName));
+        
+        if (chat != null)
+        {
+            // Explicitly load messages with their senders to avoid type casting issues
+            await _context.Entry(chat)
+                .Collection(c => c.Messages)
+                .LoadAsync();
+                
+            foreach (var message in chat.Messages)
+            {
+                await _context.Entry(message)
+                    .Reference(m => m.Sender)
+                    .LoadAsync();
+            }
+        }
+        
+        return chat;
+    }
 }

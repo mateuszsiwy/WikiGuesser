@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
             using Microsoft.AspNetCore.SignalR;
+            using WikiGuesser.Server.DTOs;
             using WikiGuesser.Server.Interfaces.Services;
             using WikiGuesser.Server.Models;
             using WikiGuesser.Server.Services;
@@ -13,7 +14,6 @@ public class ChatHub : Hub
     private readonly IChatService _chatService;
     private readonly IUserService _userService;
     
-    // Change this to a method instead of a property with lambda
     private string GetUsername() 
     {
         return _userConnectionService.GetClaimValue(Context.User, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
@@ -54,8 +54,6 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
 
-    // Update the rest of the methods to use GetUsername() instead of _username
-    // ...
 
                 public override async Task OnDisconnectedAsync(Exception exception)
                 {
@@ -68,22 +66,35 @@ public class ChatHub : Hub
                     await base.OnDisconnectedAsync(exception);
                 }
             
-                public async Task SendMessageToChat(string chatName, string message)
-                {
-                    
-                    var _username = GetUsername();
-                    if (_username != null)
-                    {
-                        Chat chat = await _chatService.GetChatWithMessages(chatName);
-                        var sender = await _userService.GetUser(_username);
-                        Message newMessage = new Message
-                        {
-                            Chat = chat,
-                            Sender = sender,
-                            MessageText = message
-                        };
-                        await _chatService.saveMessage(newMessage);
-                        await Clients.Group("Global").SendAsync("ReceiveMessage", newMessage);
-                    }
-                }
-            }
+    public async Task SendMessageToChat(string chatName, string message)
+    {
+        var _username = GetUsername();
+        if (_username != null)
+        {
+            Chat chat = await _chatService.GetChatWithMessages(chatName);
+            var sender = await _userService.GetUser(_username);
+            
+            Message newMessage = new Message
+            {
+                MessageId = Guid.NewGuid(),
+                ChatId = chat.ChatId,
+                SenderId = sender.Id,
+                MessageText = message,
+                CreatedAt = DateTime.Now
+            };
+            
+            await _chatService.saveMessage(newMessage);
+            
+            // Create a DTO to avoid circular references
+            var messageDto = new MessageDTO
+            {
+                MessageId = newMessage.MessageId,
+                MessageText = newMessage.MessageText,
+                SenderUsername = sender.UserName,
+                CreatedAt = newMessage.CreatedAt
+            };
+            
+            await Clients.Group("Global").SendAsync("ReceiveMessage", sender.UserName, message);
+        }
+} 
+}
