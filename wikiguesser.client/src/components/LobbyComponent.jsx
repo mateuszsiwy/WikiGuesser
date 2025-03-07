@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import createLobbyConnection from '../services/signalRLobbyService';
-import './LobbyComponent.css'; // You'll need to create this CSS file
+import './LobbyComponent.css'; 
 
 const LobbyComponent = () => {
     const navigate = useNavigate();
@@ -13,7 +13,6 @@ const LobbyComponent = () => {
     const [message, setMessage] = useState('');
     const [isReady, setIsReady] = useState(false);
 
-    // Initialize SignalR connection
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -68,7 +67,7 @@ const LobbyComponent = () => {
 
         newConnection.on("GameStarted", (lobbyId) => {
             if (currentLobby && currentLobby.lobbyId === lobbyId) {
-                navigate(`/game/${lobbyId}`); // Redirect to game page
+                navigate(`/game/${lobbyId}`); 
             }
         });
 
@@ -95,7 +94,6 @@ const LobbyComponent = () => {
         newConnection.start()
             .then(() => {
                 console.log("✅ Connected to LobbyHub");
-                // Fetch initial lobbies list after connection is established
                 fetchLobbies();
             })
             .catch(err => console.error("❌ Failed to connect to LobbyHub:", err));
