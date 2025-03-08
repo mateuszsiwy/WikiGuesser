@@ -22,7 +22,7 @@ function App() {
                 console.error('invalid token', error);
             }
         }
-    }, []); // Add empty dependency array to prevent continuous re-rendering
+    }, []); 
 
     return (
         <Router>
@@ -32,8 +32,8 @@ function App() {
                 <Route path="/gamemodes" element={<GameModesPage />} /> 
                 <Route path="/login" element={<LoginRegister setUsername={setUsername} />} />
                 <Route path="/chat" element={<ChatComponent />} />
-                <Route path="/lobby" element={<LobbyComponent />} /> {/* Add this route for lobbies */}
-                <Route path="/game/:lobbyId" element={<GamePage username={username}/>} /> {/* Add route for game with specific lobby */}
+                <Route path="/lobby" element={<LobbyComponent />} />
+                <Route path="/game/:lobbyId" element={<GamePage username={username}/>} /> 
             </Routes>
         </Router>
     );

@@ -13,13 +13,15 @@ public class LobbyHub : Hub
     private readonly ILobbyService _lobbyService;
     private readonly IChatService _chatService; 
     private readonly IUserService _userService;
+    private readonly IWikipediaService _wikipediaService;
     
-    public LobbyHub(UserConnectionService userConnectionService, ILobbyService lobbyService, IChatService chatService, IUserService userService)
+    public LobbyHub(UserConnectionService userConnectionService, ILobbyService lobbyService, IChatService chatService, IUserService userService, IWikipediaService wikipediaService)
     {
         _userConnectionService = userConnectionService;
         _lobbyService = lobbyService;
         _chatService = chatService;
         _userService = userService;
+        _wikipediaService = wikipediaService;
     }
 
     private string GetUsername() 
@@ -115,8 +117,22 @@ public class LobbyHub : Hub
     public async Task StartGame(Guid lobbyId)
     {
         await _lobbyService.StartGame(lobbyId);
-        
-        await Clients.All.SendAsync("GameStarted", lobbyId);
+        var article = await _wikipediaService.GetRandomArticleAsync();
+        var articleDTO = ConvertToWikipediaArticleDTO(article);
+        await Clients.All.SendAsync("GameStarted", lobbyId, articleDTO);
+    }
+    
+    public async Task EndGame(Guid lobbyId)
+    {
+        await _lobbyService.EndGame(lobbyId);
+        await Clients.All.SendAsync("GameEnded", lobbyId);
+    }
+    
+    public async Task NextRound(Guid lobbyId)
+    {
+        var article = await _wikipediaService.GetRandomArticleAsync();
+        var articleDTO = ConvertToWikipediaArticleDTO(article);
+        await Clients.All.SendAsync("NextRound", lobbyId, articleDTO);
     }
 
     public async Task SendLobbyMessage(Guid lobbyId, string message)
@@ -167,6 +183,26 @@ public class LobbyHub : Hub
                 IsReady = p.IsReady,
                 Score = p.Score
             }).ToList()
+        };
+    }
+    
+    public WikipediaArticleDTO ConvertToWikipediaArticleDTO(WikipediaArticle article)
+    {
+        if (article == null)
+            return null;
+            
+        return new WikipediaArticleDTO
+        {
+            ArticleName = article.ArticleName,
+            Summary = article.Summary,
+            Location = new LocationDTO
+            {
+                Latitude = article.Location?.Latitude,
+                Longitude = article.Location?.Longitude,
+                CountryName = article.Location?.CountryName
+            },
+            Weather = double.TryParse(article.Weather, out var temp) ? temp : 0,
+            Timezone = article.Timezone
         };
     }
 }

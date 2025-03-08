@@ -91,14 +91,18 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IChatService, ChatService>();
 builder.Services.AddTransient<ILobbyRepository, LobbyRepository>();
 builder.Services.AddTransient<ILobbyService, LobbyService>();
+builder.Services.AddHttpClient<IWikipediaService, WikipediaService>();
+builder.Services.AddTransient<IWikipediaRepository, WikipediaRepository>();
+builder.Services.AddTransient<IWikipediaService, WikipediaService>();
 builder.Services.AddSingleton(new UserConnectionService());
 builder.Services.AddSignalR();
 
+/*
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
-builder.Host.UseSerilog();
+builder.Host.UseSerilog();*/
 
 var app = builder.Build();
 

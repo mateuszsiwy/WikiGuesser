@@ -275,7 +275,7 @@
                                 <button
                                     onClick={startGame}
                                     className="start-btn"
-                                    disabled={!currentLobby.players.every(p => p.isReady) || currentLobby.players.length < 2}
+                                    disabled={!currentLobby.players.every(p => p.isReady) || currentLobby.players.length < 1}
                                 >
                                     Start Game
                                 </button>
