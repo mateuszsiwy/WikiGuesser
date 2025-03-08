@@ -79,7 +79,8 @@ public class LobbyService : ILobbyService
         await _lobbyRepository.AddPlayerAsync(newPlayer);
         
         savedLobby.Players.Add(newPlayer);
-        
+        _logger.LogInformation("Players in lobby after creation: {Players}", savedLobby.Players.Select(p => p.UserId));
+
         return await _lobbyRepository.UpdateLobbyAsync(savedLobby);
     }
 
@@ -115,6 +116,8 @@ public class LobbyService : ILobbyService
         await _lobbyRepository.AddPlayerAsync(newPlayer);
 
         lobby.Players.Add(newPlayer);
+        _logger.LogInformation("Players in lobby after joining: {Players}", lobby.Players.Select(p => p.UserId));
+
         return await _lobbyRepository.UpdateLobbyAsync(lobby);
     }
 

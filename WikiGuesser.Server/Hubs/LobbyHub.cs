@@ -50,7 +50,7 @@ public class LobbyHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task CreateLobby(string lobbyName)
+    public async Task<LobbyDTO> CreateLobby(string lobbyName)
     {
         var username = GetUsername();
         if (string.IsNullOrEmpty(username))
@@ -63,6 +63,7 @@ public class LobbyHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, lobby.LobbyId.ToString());
         var lobbyDTO = ConvertToLobbyDTO(lobby);
         await Clients.All.SendAsync("LobbyCreated", lobbyDTO);
+        return lobbyDTO;
     }
     
     
@@ -106,8 +107,9 @@ public class LobbyHub : Hub
             throw new Exception("Username is empty");    
         }
         var user = await _userService.GetUser(username);
-        await _lobbyService.SetReadyStatus(lobbyId, user.Id, ready);
-        await Clients.All.SendAsync("UserReady", username, ready);
+        var updatedLobby = await _lobbyService.SetReadyStatus(lobbyId, user.Id, ready);
+        var lobbyDTO = ConvertToLobbyDTO(updatedLobby);
+        await Clients.All.SendAsync("UserReady", username, ready, lobbyDTO);
     }
     
     public async Task StartGame(Guid lobbyId)
@@ -161,7 +163,7 @@ public class LobbyHub : Hub
             {
                 PlayerId = p.PlayerId,
                 UserId = p.UserId,
-                UserName = _userService.GetUserNameById(p.UserId).Result, // Get username
+                UserName = _userService.GetUserNameById(p.UserId).Result, 
                 IsReady = p.IsReady,
                 Score = p.Score
             }).ToList()

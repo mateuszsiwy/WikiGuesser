@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Serilog;
 using WikiGuesser.Server.Hubs;
 using WikiGuesser.Server.Interfaces.Repositories;
 using WikiGuesser.Server.Interfaces.Services;
@@ -28,6 +29,11 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<WikiGuesserDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddConsole();
+    loggingBuilder.AddDebug();
+});
 
 
 builder.Services.AddCors(options =>
@@ -87,6 +93,12 @@ builder.Services.AddTransient<ILobbyRepository, LobbyRepository>();
 builder.Services.AddTransient<ILobbyService, LobbyService>();
 builder.Services.AddSingleton(new UserConnectionService());
 builder.Services.AddSignalR();
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 
