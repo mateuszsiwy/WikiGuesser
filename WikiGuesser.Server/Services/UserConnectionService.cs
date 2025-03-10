@@ -30,7 +30,6 @@
                 throw new ArgumentNullException(nameof(user), "User is null");
             }
         
-            // Check if user.Identity is authenticated
             if (!user.Identity.IsAuthenticated)
             {
                 Console.WriteLine("User is not authenticated");
@@ -41,7 +40,6 @@
             
             if (claim == null || string.IsNullOrEmpty(claim.Value))
             {
-                // Log available claims for debugging
                 var availableClaims = string.Join(", ", user.Claims.Select(c => $"{c.Type}: {c.Value}"));
                 Console.WriteLine($"Available claims: {availableClaims}");
                 Console.WriteLine($"Could not find claim: {claimType}");

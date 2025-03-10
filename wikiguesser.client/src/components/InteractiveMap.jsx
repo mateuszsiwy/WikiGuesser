@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Polyline } from 'react-leaflet';
+import React, {useEffect, useRef, useState} from 'react';
+import {MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents} from 'react-leaflet';
 
 const InteractiveMap = ({ position, setPosition, submitted, location, onScoreUpdate }) => {
     const [distance, setDistance] = useState(null);

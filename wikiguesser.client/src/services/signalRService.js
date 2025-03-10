@@ -1,4 +1,4 @@
-﻿import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+﻿import {HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 
 const createSignalRConnection = (token) => {
     console.log("🔹 Token JWT przekazany do SignalR:", token);

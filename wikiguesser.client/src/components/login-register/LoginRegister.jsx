@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
-import { jwtDecode } from 'jwt-decode';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {FaEnvelope, FaLock, FaUser} from 'react-icons/fa';
+import {jwtDecode} from 'jwt-decode';
 import createSignalRConnection from '../../services/signalRService'; // Import funkcji SignalR
 import './LoginRegister.css';
 

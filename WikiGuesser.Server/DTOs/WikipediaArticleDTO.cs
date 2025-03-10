@@ -7,5 +7,6 @@ public class WikipediaArticleDTO
     public LocationDTO Location { get; set; }
     public double Weather { get; set; }
     public string Timezone { get; set; }
+    public List<PlayerDTO> Players { get; set; }
 }
 

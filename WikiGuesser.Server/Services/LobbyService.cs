@@ -1,4 +1,5 @@
-﻿using WikiGuesser.Server.Interfaces.Repositories;
+﻿using WikiGuesser.Server.DTOs;
+using WikiGuesser.Server.Interfaces.Repositories;
 using WikiGuesser.Server.Interfaces.Services;
 using WikiGuesser.Server.Models;
 
@@ -8,11 +9,66 @@ public class LobbyService : ILobbyService
 {
     private readonly ILobbyRepository _lobbyRepository;
     private readonly ILogger<LobbyService> _logger;
+    private readonly IWikipediaService _wikipediaService;
+    private readonly IUserService _userService;
+    private static readonly Dictionary<Guid, WikipediaArticle> _activeGameArticles = new Dictionary<Guid, WikipediaArticle>();
 
-    public LobbyService(ILobbyRepository lobbyRepository, ILogger<LobbyService> logger)
+
+    public LobbyService(ILobbyRepository lobbyRepository, ILogger<LobbyService> logger, IWikipediaService wikipediaService, IUserService userService)
     {
         _lobbyRepository = lobbyRepository;
         _logger = logger;
+        _wikipediaService = wikipediaService;
+        _userService = userService;
+    }
+    public async Task SetCurrentArticle(Guid lobbyId, WikipediaArticle article)
+    {
+        _activeGameArticles[lobbyId] = article;
+    }
+
+// Implement GetCurrentGameState
+    public async Task<WikipediaArticleDTO> GetCurrentGameState(Guid lobbyId)
+    {
+        var lobby = await GetLobby(lobbyId);
+
+        if (lobby == null)
+            throw new KeyNotFoundException($"Lobby with ID {lobbyId} not found");
+
+        if (lobby.GameState != GameState.InProgress)
+            throw new InvalidOperationException($"Game in lobby {lobbyId} is not in progress");
+
+        // Get the current article from our in-memory dictionary
+        if (!_activeGameArticles.TryGetValue(lobbyId, out var currentArticle))
+        {
+            // If no article is stored for this lobby, get a new one
+            currentArticle = await _wikipediaService.GetRandomArticleAsync();
+            _activeGameArticles[lobbyId] = currentArticle;
+        }
+
+        // Convert article to DTO format
+        var articleDTO = new WikipediaArticleDTO
+        {
+            ArticleName = currentArticle.ArticleName,
+            Summary = currentArticle.Summary,
+            Location = new LocationDTO
+            {
+                Latitude = currentArticle.Location?.Latitude,
+                Longitude = currentArticle.Location?.Longitude,
+                CountryName = currentArticle.Location?.CountryName
+            },
+            Weather = double.TryParse(currentArticle.Weather, out var temp) ? temp : 0,
+            Timezone = currentArticle.Timezone,
+            Players = lobby.Players.Select(p => new PlayerDTO
+            {
+                PlayerId = p.PlayerId,
+                UserId = p.UserId,
+                UserName = _userService.GetUserNameById(p.UserId).Result,
+                IsReady = p.IsReady,
+                Score = p.Score
+            }).ToList()
+        };
+
+        return articleDTO;
     }
 
     public async Task<List<Lobby>> GetLobbies()
@@ -218,4 +274,21 @@ public class LobbyService : ILobbyService
         player.Score = score;
         return await _lobbyRepository.UpdateLobbyAsync(lobby);
     }
+    
+    public async Task UpdatePlayerScores(Guid lobbyId, List<PlayerScoreDTO> playerScores)
+    {
+        var lobby = await GetLobby(lobbyId);
+        
+        foreach (var playerScore in playerScores)
+        {
+            var player = lobby.Players.FirstOrDefault(p => p.PlayerId == playerScore.PlayerId);
+            if (player != null)
+            {
+                player.Score += playerScore.Score;
+            }
+        }
+        
+        await _lobbyRepository.UpdateLobbyAsync(lobby);
+    }
+    
 }

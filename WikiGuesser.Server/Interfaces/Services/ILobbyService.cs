@@ -1,4 +1,5 @@
-﻿using WikiGuesser.Server.Models;
+﻿using WikiGuesser.Server.DTOs;
+using WikiGuesser.Server.Models;
 
 namespace WikiGuesser.Server.Interfaces.Services;
 
@@ -13,4 +14,7 @@ public interface ILobbyService
     Task<Lobby> StartGame(Guid lobbyId);
     Task<Lobby> EndGame(Guid lobbyId);
     Task<Lobby> UpdateScore(Guid lobbyId, string userId, int score);
+    Task UpdatePlayerScores(Guid lobbyId, List<PlayerScoreDTO> playerScores);
+    Task SetCurrentArticle(Guid lobbyId, WikipediaArticle article);
+    Task<WikipediaArticleDTO> GetCurrentGameState(Guid lobbyId);
 }

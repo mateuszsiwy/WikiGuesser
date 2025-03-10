@@ -116,10 +116,19 @@ public class LobbyHub : Hub
     
     public async Task StartGame(Guid lobbyId)
     {
+        var lobby = await _lobbyService.GetLobby(lobbyId);
+        if (lobby.GameState != GameState.WaitingForPlayers)
+        {
+            throw new InvalidOperationException("Game cannot be started in the current state");
+        }
+    
         await _lobbyService.StartGame(lobbyId);
         var article = await _wikipediaService.GetRandomArticleAsync();
+        
+        await _lobbyService.SetCurrentArticle(lobbyId, article);
+        
         var articleDTO = ConvertToWikipediaArticleDTO(article);
-        await Clients.All.SendAsync("GameStarted", lobbyId, articleDTO);
+        await Clients.Group(lobbyId.ToString()).SendAsync("GameStarted", lobbyId, articleDTO);
     }
     
     public async Task EndGame(Guid lobbyId)
@@ -128,13 +137,27 @@ public class LobbyHub : Hub
         await Clients.All.SendAsync("GameEnded", lobbyId);
     }
     
-    public async Task NextRound(Guid lobbyId)
+    public async Task NextRound(Guid lobbyId, List<PlayerScoreDTO> playerScores, int roundNumber)
     {
+        await _lobbyService.UpdatePlayerScores(lobbyId, playerScores);
+        
         var article = await _wikipediaService.GetRandomArticleAsync();
+        await _lobbyService.SetCurrentArticle(lobbyId, article);
+        
         var articleDTO = ConvertToWikipediaArticleDTO(article);
-        await Clients.All.SendAsync("NextRound", lobbyId, articleDTO);
+        
+        var updatedLobby = await _lobbyService.GetLobby(lobbyId);
+        var updatedPlayers = updatedLobby.Players.Select(p => new PlayerDTO
+        {
+            PlayerId = p.PlayerId,
+            UserId = p.UserId,
+            UserName = _userService.GetUserNameById(p.UserId).Result,
+            IsReady = p.IsReady,
+            Score = p.Score
+        }).ToList();
+        
+        await Clients.Group(lobbyId.ToString()).SendAsync("NextRound", lobbyId, articleDTO, updatedPlayers, roundNumber);
     }
-
     public async Task SendLobbyMessage(Guid lobbyId, string message)
     {
         var username = GetUsername();
@@ -164,6 +187,28 @@ public class LobbyHub : Hub
 
         await Clients.Group(lobbyId.ToString()).SendAsync("ReceiveLobbyMessage", user.UserName, message);
     }
+
+    public Task KeepAlive()
+    {
+        return Task.CompletedTask;
+    }
+    
+    // Add this method to LobbyHub.cs
+    public async Task JoinGame(Guid lobbyId)
+    {
+        var username = GetUsername();
+        if (string.IsNullOrEmpty(username))
+        {
+            throw new Exception("Username is empty");    
+        }
+        
+        // Add the client to the lobby group without modifying the lobby state
+        await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId.ToString());
+        
+        // Optionally, notify others that this player reconnected to the game
+        await Clients.OthersInGroup(lobbyId.ToString()).SendAsync("PlayerReconnected", username);
+    }
+    
     
     private LobbyDTO ConvertToLobbyDTO(Lobby lobby)
     {

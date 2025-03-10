@@ -1,7 +1,6 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
-import fs from 'fs';
-import { fileURLToPath, URL } from 'url';
+import {fileURLToPath, URL} from 'url';
 
 const keyFilePath = `${process.env.APPDATA}/vite/key.pem`;
 const certFilePath = `${process.env.APPDATA}/vite/cert.pem`;

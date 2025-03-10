@@ -55,4 +55,15 @@ public class LobbyController : ControllerBase
 
         return Ok(lobbyDTOs);
     }
+    [HttpGet("{lobbyId}/gamestate")]
+    public async Task<IActionResult> GetGameState(Guid lobbyId)
+    {
+        try {
+            var gameState = await _lobbyService.GetCurrentGameState(lobbyId);
+            return Ok(gameState);
+        }
+        catch (Exception ex) {
+            return StatusCode(500, $"Error getting game state: {ex.Message}");
+        }
+    }
 }

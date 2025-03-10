@@ -219,8 +219,8 @@ public class WikipediaService : IWikipediaService
                     Timezone = weatherData.Location.LocalTime
                 };
             }
-
-            return await FetchAndCacheArticle();
+            await PopulateCacheAsync();
+            return await FetchAndCacheArticleSingle();
         }
         catch (Exception ex)
         {
@@ -228,10 +228,9 @@ public class WikipediaService : IWikipediaService
             throw;
         }
     }
-
-    private async Task<WikipediaArticle> FetchAndCacheArticle()
+    
+    private async Task<WikipediaArticle> FetchAndCacheArticleSingle()
     {
-        await PopulateCacheAsync();
         var cityName = await GetRandomCity();
         var cityDesc = await GetCityDescription(cityName);
 
@@ -247,7 +246,8 @@ public class WikipediaService : IWikipediaService
         var location = await GetLocation(cityName);
         var weatherData = await GetWeather(cityName);
 
-        if (location?.CountryName != null) cityDesc = cityDesc.Replace(location.CountryName, "COUNTRY");
+        if (location?.CountryName != null) 
+            cityDesc = cityDesc.Replace(location.CountryName, "COUNTRY");
 
         await _wikipediaRepository.AddArticleToCacheAsync(new CachedArticle
         {
@@ -267,7 +267,7 @@ public class WikipediaService : IWikipediaService
             Timezone = weatherData.Location.LocalTime
         };
     }
-    
+
     public async Task PopulateCacheAsync(int count = 500)
     {
         if (await _wikipediaRepository.IsCacheEmpty())
@@ -276,7 +276,7 @@ public class WikipediaService : IWikipediaService
             {
                 try
                 {
-                    await FetchAndCacheArticle();
+                    await FetchAndCacheArticleSingle();
                     _logger.LogInformation($"Cached article {i+1}/{count}");
                 }
                 catch (Exception ex)
@@ -286,4 +286,6 @@ public class WikipediaService : IWikipediaService
             }
         }
     }
+    
+    
 }
