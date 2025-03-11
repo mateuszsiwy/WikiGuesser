@@ -145,6 +145,8 @@ public class LobbyHub : Hub
             IsReady = p.IsReady,
             Score = p.Score
         }).ToList();
+
+        
         await Clients.All.SendAsync("GameEnded", lobbyId, finalPlayers);
     }
     

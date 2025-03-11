@@ -21,7 +21,8 @@ function GamePage({username, connection}) {
     const [isOnlineGame, setIsOnlineGame] = useState(false);
     const [gameFinished, setGameFinished] = useState(false);
     const [finalScores, setFinalScores] = useState([]);
-    
+    const [isLoading, setIsLoading] = useState(true);
+
     const {lobbyId} = useParams();
     const navigate = useNavigate();
 
@@ -35,6 +36,8 @@ function GamePage({username, connection}) {
                 console.log("Retrieved game state:", gameState);
 
                 setArticle(gameState.articleName || "");
+                gameState.summary = gameState.summary.replace(new RegExp(gameState.location.countryName, 'g'), "COUNTRY");
+
                 setCityDesc(gameState.summary || "");
 
                 if (gameState.location) {
@@ -48,6 +51,8 @@ function GamePage({username, connection}) {
                 setWeather(gameState.weather);
                 setTimezone(gameState.timezone);
                 setPlayers(gameState.players || []);
+                
+                setIsLoading(false);
             }
         } catch (error) {
             console.error("Error fetching game state:", error);
@@ -59,7 +64,11 @@ function GamePage({username, connection}) {
         if (lobbyId) {
             setIsOnlineGame(true);
             console.log("THIS IS ONLINE GAME MODE");
+            
             fetchGameState();
+        } else{
+            console.log("THIS IS OFFLINE GAME MODE");
+            fetchData();
         }
         if (connection && lobbyId) {
             if (connection.state === "Connected") {
@@ -72,6 +81,8 @@ function GamePage({username, connection}) {
                 if (receivedLobbyId === lobbyId) {
 
                     setArticle(articleDTO.articleName);
+                    articleDTO.summary = articleDTO.summary.replace(new RegExp(articleDTO.location.countryName, 'g'), "COUNTRY");
+                    
                     setCityDesc(articleDTO.summary);
                     setLocation({
                         lat: articleDTO.location.latitude,
@@ -150,49 +161,38 @@ function GamePage({username, connection}) {
     }, [connection, lobbyId, navigate]);
 
     const fetchData = async () => {
-        if (lobbyId) {
-            console.log("Skipping fetch for online game");
-            return;
-        }
+        setIsLoading(true);
         try {
-            let articleResponse = await fetch('http://localhost:5084/api/wikipedia/cities');
-            let articleData = await articleResponse.text();
-
-            setArticle(articleData);
-            let cityDescResponse = await fetch(`http://localhost:5084/api/wikipedia/citydesc/${articleData}`);
-            let cityDescData = await cityDescResponse.text();
-
-            while (!cityDescResponse.ok || cityDescData == "Strona nie została znaleziona." || cityDescData.includes("may refer to") || cityDescData.includes("usually refers to") || cityDescData.includes("may mean")) {
-                articleResponse = await fetch('http://localhost:5084/api/wikipedia/cities');
-                articleData = await articleResponse.text();
-
-                setArticle(articleData);
-                cityDescResponse = await fetch(`http://localhost:5084/api/wikipedia/citydesc/${articleData}`);
-                cityDescData = await cityDescResponse.text();
+            const response = await fetch('http://localhost:5084/api/wikipedia/randomArticle');
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch article: ${response.status}`);
             }
-
-            const locationResponse = await fetch(`http://localhost:5084/api/wikipedia/location/${articleData}`);
-            const locationData = await locationResponse.json();
-
-            const location = {
-                countryName: locationData.countryName,
-                lat: locationData.latitude,
-                lng: locationData.longitude
-            };
-
-            setLocation(location);
-
-            const weatherResponse = await fetch(`http://localhost:5084/api/wikipedia/citydesc/${articleData}/weather`);
-            const weatherData = await weatherResponse.json();
-            setWeather(weatherData.current.temp_c);
-            setTimezone(weatherData.location.localtime);
-
-            if (locationData?.countryName) {
-                cityDescData = cityDescData.replace(new RegExp(locationData.countryName, 'g'), "COUNTRY");
-            }
-            setCityDesc(cityDescData);
+            
+            const articleData = await response.json();
+            
+            setArticle(articleData.articleName);
+            
+            const processedDesc = articleData.summary.replace(
+                new RegExp(articleData.location.countryName, 'g'), 
+                "COUNTRY"
+            );
+            
+            setCityDesc(processedDesc);
+            
+            setLocation({
+                countryName: articleData.location.countryName,
+                lat: articleData.location.latitude,
+                lng: articleData.location.longitude
+            });
+            
+            setWeather(articleData.weather);
+            setTimezone(articleData.timezone);
+            
         } catch (error) {
             console.error('Error fetching data:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -310,7 +310,7 @@ function GamePage({username, connection}) {
                     )}
                 </div>
                 <div className="articleWindow" id="articleWindow">
-                    {article ? (
+                    {!isLoading ? (
                         <>
                             <h1>{article}</h1>
                             <div dangerouslySetInnerHTML={{__html: cityDesc}}></div>
@@ -321,13 +321,16 @@ function GamePage({username, connection}) {
                         <p>Loading article...</p>
                     )}
                 </div>
-                <InteractiveMap
-                    position={position}
-                    setPosition={setPosition}
-                    submitted={submitted}
-                    location={location}
-                    onScoreUpdate={handleScoreUpdate}
-                />
+                <div className="map-container">
+                    <InteractiveMap
+                        position={position}
+                        setPosition={setPosition}
+                        submitted={submitted}
+                        location={location}
+                        onScoreUpdate={handleScoreUpdate}
+                    />
+                </div>
+                
                 <button className="submitButton" id="submitButton" onClick={onSubmit}>
                     Submit
                 </button>

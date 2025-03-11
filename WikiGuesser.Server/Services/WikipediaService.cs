@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using WikiGuesser.Server.Interfaces.Repositories;
 using WikiGuesser.Server.Interfaces.Services;
@@ -180,10 +181,20 @@ public class WikipediaService : IWikipediaService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<WeatherData>(content, new JsonSerializerOptions
+                var jsonObject = JObject.Parse(content);
+                var weatherData = new WeatherData
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    Current = new Current
+                    {
+                        TempC = jsonObject["current"]["temp_c"].ToString()
+                    },
+                    Location = new WeatherLocation
+                    {
+                        LocalTime = jsonObject["location"]["localtime"].ToString()
+                    }
+                };
+                
+                return weatherData;
             }
 
             throw new Exception($"Weather data not found. Status code: {response.StatusCode}");
@@ -285,6 +296,180 @@ public class WikipediaService : IWikipediaService
                 }
             }
         }
+    }
+    
+    public async Task<DailyCityData> GetDailyCityData(string city)
+    {
+        try {
+            var location = await GetLocation(city);
+            var description = await GetCityDescription(city);
+            var weatherData = await GetWeather(city);
+            
+            var population = await GetPopulationData(city);
+            var landmarks = await GetCityLandmarks(city);
+            var history = Regex.Replace(await GetCityDescription(city), city, "COUNTRY", RegexOptions.IgnoreCase);
+            var economy = await GetCityEconomy(city);
+            var photos = await GetCityPhotos(city);
+            
+            return new DailyCityData {
+                
+                CityName = city,
+                Description = description,
+                Location = location,
+                Weather = weatherData,
+                Population = population,
+                Landmarks = landmarks,
+                History = history,
+                Economy = economy,
+                Photos = photos,
+                Date = DateTime.UtcNow.Date
+            };
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Error fetching daily city data for {CityName}", city);
+            throw;
+        }
+    }
+    
+    private async Task<string> GetPopulationData(string city)
+    {
+        var url = $"http://api.geonames.org/searchJSON?q={city}&maxRows=1&username=msiwy&style=full";
+        var response = await _httpClient.GetAsync(url);
+        if (response.IsSuccessStatusCode) {
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(content);
+            return json["geonames"]?.FirstOrDefault()?["population"]?.ToString() ?? "Unknown";
+        }
+        return "Population data unavailable";
+    }
+    
+    private async Task<List<string>> GetCityLandmarks(string city)
+    {
+        var url = $"https://en.wikipedia.org/w/api.php?action=query&prop=links&titles={city}&pllimit=50&format=json";
+        var response = await _httpClient.GetAsync(url);
+        
+        if (response.IsSuccessStatusCode) {
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(content);
+            var page = json["query"]["pages"].First.First;
+            
+            var landmarks = new List<string>();
+            if (page["links"] != null) {
+                foreach (var link in page["links"]) {
+                    var title = link["title"].ToString();
+                    if (title.Contains("Museum") || title.Contains("Palace") || 
+                        title.Contains("Cathedral") || title.Contains("Monument")) {
+                        landmarks.Add(title);
+                    }
+                }
+            }
+            return landmarks.Take(5).ToList();
+        }
+        return new List<string>() { "No landmarks found" };
+    }
+    
+    private async Task<string> GetCityHistory(string city)
+    {
+        var url = $"https://en.wikipedia.org/w/api.php?action=parse&page={city}&prop=text&section=1&format=json";
+        var response = await _httpClient.GetAsync(url);
+        
+        if (response.IsSuccessStatusCode) {
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(content);
+            if (json["parse"] != null && json["parse"]["text"] != null) {
+                var htmlContent = json["parse"]["text"]["*"].ToString();
+                return htmlContent;
+            }
+        }
+        return "Historical information unavailable";
+    }
+    
+    private async Task<string> GetCityEconomy(string city)
+    {
+        var url = $"https://en.wikipedia.org/w/api.php?action=parse&page={city}&prop=text&section=2&format=json";
+        var response = await _httpClient.GetAsync(url);
+        
+        if (response.IsSuccessStatusCode) {
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(content);
+            if (json["parse"] != null && json["parse"]["text"] != null) {
+                return json["parse"]["text"]["*"].ToString();
+            }
+        }
+        return "Economic information unavailable";
+    }
+    
+    private async Task<List<string>> GetCityPhotos(string city)
+    {
+        var url = $"https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch={city} city&srnamespace=6&format=json";
+        var response = await _httpClient.GetAsync(url);
+        
+        if (response.IsSuccessStatusCode) {
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(content);
+            var photos = new List<string>();
+            
+            if (json["query"] != null && json["query"]["search"] != null) {
+                foreach (var item in json["query"]["search"]) {
+                    photos.Add(item["title"].ToString().Replace("File:", ""));
+                    if (photos.Count >= 3) break;
+                }
+            }
+            return photos;
+        }
+        return new List<string>();
+    }
+    
+    private static readonly List<string> LargeCities = new List<string>
+    {
+        // North America
+        "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", 
+        "Dallas", "Toronto", "Montreal", "Vancouver", "Mexico City", "Guadalajara", "Monterrey",
+        
+        // South America
+        "São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Buenos Aires", "Lima", "Bogotá", "Santiago", 
+        "Caracas", "Quito", "Medellín", "Cali", "Montevideo", "La Paz", "Asunción",
+        
+        // Europe
+        "London", "Berlin", "Madrid", "Rome", "Paris", "Vienna", "Amsterdam", "Barcelona", "Munich", "Milan",
+        "Warsaw", "Prague", "Brussels", "Dublin", "Lisbon", "Stockholm", "Copenhagen", "Helsinki", "Oslo",
+        "Athens", "Budapest", "Bucharest", "Sofia", "Belgrade", "Zagreb", "Kyiv", "Minsk", "Riga", "Vilnius",
+        
+        // Africa
+        "Cairo", "Lagos", "Kinshasa", "Johannesburg", "Algiers", "Casablanca", "Nairobi", "Khartoum", "Addis Ababa",
+        "Dar es Salaam", "Cape Town", "Tunis", "Rabat", "Accra", "Dakar", "Luanda", "Abidjan", "Maputo",
+        
+        // Asia
+        "Tokyo", "Delhi", "Shanghai", "Mumbai", "Beijing", "Dhaka", "Istanbul", "Karachi", "Guangzhou", "Seoul",
+        "Jakarta", "Bangkok", "Ho Chi Minh City", "Taipei", "Hong Kong", "Singapore", "Kuala Lumpur", "Manila",
+        "Bangalore", "Chennai", "Kolkata", "Osaka", "Shenzhen", "Chengdu", "Lahore", "Hyderabad", "Riyadh",
+        "Dubai", "Abu Dhabi", "Jeddah", "Tehran", "Baghdad", "Almaty", "Tashkent", "Hanoi", "Yangon", "Phnom Penh",
+        
+        // Oceania
+        "Sydney", "Melbourne", "Brisbane", "Perth", "Auckland", "Wellington", "Christchurch", "Adelaide",
+        
+        // Additional Major Cities
+        "Moscow", "Bangalore", "Ahmedabad", "Chongqing", "Wuhan", "Tianjin", "Xi'an", "Chengdu",
+        "Nanjing", "Dongguan", "Hangzhou", "Shenyang", "Busan", "Incheon", "Fukuoka", "Sapporo", "Kyoto",
+        "Casablanca", "Alexandria", "Ankara", "Izmir", "Damascus", "Kabul", "Kathmandu", "Colombo", "Pune",
+        "Surat", "Jaipur", "Lucknow", "Kanpur", "Nagpur", "Indore", "Thane", "Bhopal", "Visakhapatnam",
+        "Brussels", "Manchester", "Birmingham", "Glasgow", "Liverpool", "Lyon", "Marseille", "Lille", "Naples",
+        "Turin", "Valencia", "Seville", "Zaragoza", "Frankfurt", "Düsseldorf", "Stuttgart", "Portland", "Denver",
+        "Boston", "Detroit", "Seattle", "Minneapolis", "Austin", "San Jose", "Jacksonville", "Charlotte",
+        "San Francisco", "Indianapolis", "Columbus", "Fort Worth", "Washington", "Nashville", "Memphis",
+        "Baltimore", "Louisville", "Milwaukee", "Albuquerque", "Tucson", "Fresno", "Sacramento",
+        "Guadalajara", "Monterrey", "Puebla", "Toluca", "León", "Tijuana", "Montreal", "Calgary", "Edmonton",
+        "Ottawa", "Winnipeg", "Quebec City", "Hamilton", "Havana", "Osaka", "Nagoya", "Sapporo", "Kobe",
+        "Kyoto", "Fukuoka", "Kawasaki", "Saitama", "Hiroshima", "Yekaterinburg", "Novosibirsk", "Samara"
+    };
+    
+    public async Task<string> GetDailyCity()
+    {
+        var today = DateTime.UtcNow.Date - TimeSpan.FromDays(1);
+        var seed = today.Year * 10000 + today.Month * 100 + today.Day;
+        var random = new Random(seed);
+        
+        return LargeCities[random.Next(LargeCities.Count)];
     }
     
     

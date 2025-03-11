@@ -40,14 +40,14 @@
     bottom: 5%;
     right: 2%;
     margin: 20px;
-    padding: 10px;
+    padding: 10px 30px;
     border-radius: 20px;
     background-color: #DFC189;
     color: white;
     font-size: 25px;
-    text-decoration: none;
+    border: none;
+    cursor: pointer;
     transition: transform 0.2s;
-    
 }
 
 .submitButton:hover {

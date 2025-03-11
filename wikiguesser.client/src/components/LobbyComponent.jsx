@@ -11,6 +11,7 @@ const LobbyComponent = ({connection}) => {
     const [lobbyMessages, setLobbyMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [isReady, setIsReady] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         currentLobbyRef.current = currentLobby;
@@ -112,6 +113,7 @@ const LobbyComponent = ({connection}) => {
 
         const fetchLobbies = async () => {
             try {
+                setIsLoading(true);
                 const response = await fetch('http://localhost:5084/api/lobby', {});
 
                 if (response.ok) {
@@ -122,6 +124,8 @@ const LobbyComponent = ({connection}) => {
                 }
             } catch (err) {
                 console.error("Error fetching lobbies:", err);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -222,8 +226,14 @@ const LobbyComponent = ({connection}) => {
 
     if (!currentLobby) {
         return (
+            <div className="mainPage">
             <div className="lobby-container">
-                <h2>Game Lobbies</h2>
+                <div className="header-controls">
+                    <h2>Game Lobbies</h2>
+                    <button className="back-button" onClick={() => navigate('/')}>
+                        Back to Home
+                    </button>
+                </div>
                 <div className="create-lobby">
                     <input
                         type="text"
@@ -234,8 +244,10 @@ const LobbyComponent = ({connection}) => {
                     <button onClick={createLobby}>Create Lobby</button>
                 </div>
                 <div className="lobby-list">
-                    {lobbies.length === 0 ? (
-                        <p>No active lobbies found. Create one to start playing!</p>
+                    {isLoading ? (
+                        <p>Loading lobbies...</p>
+                    ) : lobbies.length === 0 ? (
+                        <p>No lobbies available. Create one to start playing!</p>
                     ) : (
                         <ul>
                             {lobbies.map(lobby => (
@@ -257,10 +269,13 @@ const LobbyComponent = ({connection}) => {
                     )}
                 </div>
             </div>
+            </div>
         );
     }
 
     return (
+        <div className="mainPage">
+            
         <div className="lobby-detail">
             <div className="lobby-header">
                 <h2>{currentLobby.name}</h2>
@@ -319,6 +334,7 @@ const LobbyComponent = ({connection}) => {
                 </div>
             </div>
         </div>
+            </div>
     );
 };
 

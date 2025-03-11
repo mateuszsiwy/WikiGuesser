@@ -6,6 +6,7 @@ import GameModesPage from './components/gamemodes/GameModesPage';
 import LoginRegister from './components/login-register/LoginRegister';
 import ChatComponent from "./components/ChatComponent.jsx";
 import LobbyComponent from './components/LobbyComponent';
+import DailyChallenge from './components/DailyChallenge';
 import createLobbyConnection from './services/signalRLobbyService';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/chat" element={<ChatComponent/>}/>
                 <Route path="/lobby" element={<LobbyComponent connection={connection}/>}/>
                 <Route path="/game/:lobbyId" element={<GamePage username={username} connection={connection}/>}/>
+                <Route path="/daily" element={<DailyChallenge/>}/>
             </Routes>
         </Router>
     );

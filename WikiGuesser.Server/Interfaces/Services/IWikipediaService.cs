@@ -11,5 +11,7 @@ public interface IWikipediaService
     Task<Location> GetLocation(string city);
     Task<string> GetCityDescription(string city);
     Task<WeatherData> GetWeather(string city);
-    
+    Task<string> GetDailyCity();
+    Task<DailyCityData> GetDailyCityData(string city);
+
 }

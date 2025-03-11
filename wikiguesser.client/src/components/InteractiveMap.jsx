@@ -64,7 +64,7 @@ const InteractiveMap = ({ position, setPosition, submitted, location, onScoreUpd
             <MapContainer
                 center={[51.505, -0.09]} // Domy�lne wsp�rz�dne
                 zoom={6}                // Poziom zoomu
-                style={{ height: "90%", width: "40%", position: "absolute", top: "5%", left: "58%" }}
+                style={{ height: "100%", width: "100%", position: "absolute", top: "0%", left: "0%" }}
                 whenCreated={mapInstance => {
                     mapRef.current = mapInstance;
                 }}

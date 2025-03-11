@@ -2,14 +2,14 @@ import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {FaEnvelope, FaLock, FaUser} from 'react-icons/fa';
 import {jwtDecode} from 'jwt-decode';
-import createSignalRConnection from '../../services/signalRService'; // Import funkcji SignalR
+import createSignalRConnection from '../../services/signalRService'; 
 import './LoginRegister.css';
 
 function LoginRegister({ setUsername }) {
     const navigate = useNavigate();
     const [action, setAction] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [connection, setConnection] = useState(null); // Przechowujemy połączenie SignalR
+    const [connection, setConnection] = useState(null);
 
     const registerLink = () => {
         setAction(' active');
@@ -107,10 +107,7 @@ function LoginRegister({ setUsername }) {
                             <FaLock className="icon" />
                         </div>
                         <p>{errorMessage}</p>
-                        <div className="remember-forgot">
-                            <label><input type="checkbox" />Remember me</label>
-                            <a href="#">Forgot Password</a>
-                        </div>
+     
                         <button type="submit">Login</button>
                         <div className="register-link">
                             <p>Don't have an account? <a href="#" onClick={registerLink}>Register</a></p>
@@ -134,10 +131,7 @@ function LoginRegister({ setUsername }) {
                             <FaLock className="icon" />
                         </div>
                         <p>{errorMessage}</p>
-                        <div className="remember-forgot">
-                            <label><input type="checkbox" />I agree to the terms & conditions</label>
-                            <a href="#">Forgot Password</a>
-                        </div>
+
                         <button type="submit">Register</button>
                         <div className="register-link">
                             <p>Already have an account? <a href="#" onClick={loginLink}>Login</a></p>

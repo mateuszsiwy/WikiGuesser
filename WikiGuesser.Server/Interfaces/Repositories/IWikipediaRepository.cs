@@ -11,4 +11,5 @@ public interface IWikipediaRepository
     Task<CachedArticle> GetRandomCachedArticleAsync();
     Task AddArticleToCacheAsync(CachedArticle article);
     Task<bool> IsCacheEmpty();
+    Task<List<City>> GetAllCitiesAsync();
 }

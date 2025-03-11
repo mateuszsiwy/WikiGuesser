@@ -61,4 +61,9 @@ public class WikipediaRepository : IWikipediaRepository
     {
         return !await _context.CachedArticles.AnyAsync();
     }
+    
+    public async Task<List<City>> GetAllCitiesAsync()
+    {
+        return await _context.Cities.ToListAsync();
+    }
 }

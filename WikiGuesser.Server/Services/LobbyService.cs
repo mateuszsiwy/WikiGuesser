@@ -26,7 +26,6 @@ public class LobbyService : ILobbyService
         _activeGameArticles[lobbyId] = article;
     }
 
-// Implement GetCurrentGameState
     public async Task<WikipediaArticleDTO> GetCurrentGameState(Guid lobbyId)
     {
         var lobby = await GetLobby(lobbyId);
@@ -37,15 +36,12 @@ public class LobbyService : ILobbyService
         if (lobby.GameState != GameState.InProgress)
             throw new InvalidOperationException($"Game in lobby {lobbyId} is not in progress");
 
-        // Get the current article from our in-memory dictionary
         if (!_activeGameArticles.TryGetValue(lobbyId, out var currentArticle))
         {
-            // If no article is stored for this lobby, get a new one
             currentArticle = await _wikipediaService.GetRandomArticleAsync();
             _activeGameArticles[lobbyId] = currentArticle;
         }
 
-        // Convert article to DTO format
         var articleDTO = new WikipediaArticleDTO
         {
             ArticleName = currentArticle.ArticleName,
@@ -248,6 +244,7 @@ public class LobbyService : ILobbyService
         }
         
         lobby.GameState = GameState.Finished;
+        lobby.IsActive = false;
         return await _lobbyRepository.UpdateLobbyAsync(lobby);
     }
 
