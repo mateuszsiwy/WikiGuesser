@@ -14,7 +14,10 @@ public class LobbyHub : Hub
     private readonly IChatService _chatService; 
     private readonly IUserService _userService;
     private readonly IWikipediaService _wikipediaService;
-    
+    private static readonly Dictionary<Guid, HashSet<string>> _playerSubmissions = new Dictionary<Guid, HashSet<string>>();
+    private static readonly Dictionary<Guid, List<PlayerScoreDTO>> _roundScores = new Dictionary<Guid, List<PlayerScoreDTO>>();
+    private static readonly Dictionary<Guid, int> _currentRounds = new Dictionary<Guid, int>();
+
     public LobbyHub(UserConnectionService userConnectionService, ILobbyService lobbyService, IChatService chatService, IUserService userService, IWikipediaService wikipediaService)
     {
         _userConnectionService = userConnectionService;
@@ -133,8 +136,16 @@ public class LobbyHub : Hub
     
     public async Task EndGame(Guid lobbyId)
     {
-        await _lobbyService.EndGame(lobbyId);
-        await Clients.All.SendAsync("GameEnded", lobbyId);
+        var lobby = await _lobbyService.EndGame(lobbyId);
+        var finalPlayers = lobby.Players.Select(p => new PlayerDTO
+        {
+            PlayerId = p.PlayerId,
+            UserId = p.UserId,
+            UserName = _userService.GetUserNameById(p.UserId).Result,
+            IsReady = p.IsReady,
+            Score = p.Score
+        }).ToList();
+        await Clients.All.SendAsync("GameEnded", lobbyId, finalPlayers);
     }
     
     public async Task NextRound(Guid lobbyId, List<PlayerScoreDTO> playerScores, int roundNumber)
@@ -157,6 +168,42 @@ public class LobbyHub : Hub
         }).ToList();
         
         await Clients.Group(lobbyId.ToString()).SendAsync("NextRound", lobbyId, articleDTO, updatedPlayers, roundNumber);
+    }
+    public async Task SubmitGuess(Guid lobbyId, PlayerScoreDTO playerScore)
+    {
+        if (!_playerSubmissions.ContainsKey(lobbyId))
+        {
+            _playerSubmissions[lobbyId] = new HashSet<string>();
+            _roundScores[lobbyId] = new List<PlayerScoreDTO>();
+            _currentRounds[lobbyId] = 1; 
+        }
+
+        var username = GetUsername();
+        _playerSubmissions[lobbyId].Add(username);
+        _roundScores[lobbyId].Add(playerScore);
+    
+        var lobby = await _lobbyService.GetLobby(lobbyId);
+    
+        await Clients.Group(lobbyId.ToString()).SendAsync("PlayerSubmitted", username, playerScore.Score);
+    
+        if (_playerSubmissions[lobbyId].Count >= lobby.Players.Count)
+        {
+            var currentRound = _currentRounds[lobbyId]; 
+            await Task.Delay(7000);
+            if (currentRound < 5)
+            {
+                _currentRounds[lobbyId] = currentRound + 1;
+                
+                await NextRound(lobbyId, _roundScores[lobbyId], currentRound + 1);
+            }
+            else
+            {
+                await EndGame(lobbyId);
+            }
+        
+            _playerSubmissions[lobbyId].Clear();
+            _roundScores[lobbyId].Clear();
+        }
     }
     public async Task SendLobbyMessage(Guid lobbyId, string message)
     {
@@ -202,10 +249,8 @@ public class LobbyHub : Hub
             throw new Exception("Username is empty");    
         }
         
-        // Add the client to the lobby group without modifying the lobby state
         await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId.ToString());
         
-        // Optionally, notify others that this player reconnected to the game
         await Clients.OthersInGroup(lobbyId.ToString()).SendAsync("PlayerReconnected", username);
     }
     

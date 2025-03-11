@@ -87,3 +87,63 @@
         border: none;   
     }
 }
+
+.finalScoresOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.finalScoresWindow {
+    background-color: #2c3e50;
+    border-radius: 10px;
+    padding: 2rem;
+    min-width: 400px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.finalScoresTable {
+    width: 100%;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+}
+
+.finalScoresTable th, .finalScoresTable td {
+    padding: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.finalScoresTable th {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.finalScoresTable .currentPlayer {
+    background-color: rgba(52, 152, 219, 0.2);
+    font-weight: bold;
+}
+
+.returnToLobbyBtn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+.returnToLobbyBtn:hover {
+    background-color: #2980b9;
+}

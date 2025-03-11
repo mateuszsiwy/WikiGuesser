@@ -34,16 +34,14 @@ const LobbyComponent = ({connection}) => {
             return;
         }
 
-        // Setup keepalive ping
         const keepAliveInterval = setInterval(() => {
             if (connection.state === "Connected") {
                 connection.invoke("KeepAlive").catch(err => {
                     console.log("KeepAlive error:", err);
                 });
             }
-        }, 15000); // 15 seconds
+        }, 15000); 
 
-        // Set up handlers for this component
         connection.on("LobbyCreated", (lobby) => {
             const uniquePlayers = [...new Map(lobby.players.map(p => [p.userId, p])).values()];
             setLobbies(prevLobbies => [...prevLobbies, {...lobby, players: uniquePlayers}]);
@@ -135,14 +133,12 @@ const LobbyComponent = ({connection}) => {
 
         return () => {
             clearInterval(keepAliveInterval);
-            // Remove event listeners, but don't stop the connection
             connection.off("LobbyCreated");
             connection.off("UserJoined");
             connection.off("UserLeft");
             connection.off("UserReady");
             connection.off("ReceiveLobbyMessage");
 
-            // Just leave the lobby if we're in one, don't close the connection
             if (currentLobbyRef.current && !window.location.pathname.includes('/game/')) {
                 connection.invoke("LeaveLobby", currentLobbyRef.current.lobbyId)
                     .catch(err => console.error("Error leaving lobby:", err));
