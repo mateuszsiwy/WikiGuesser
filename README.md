@@ -10,7 +10,7 @@ WikiGuesser challenges players to guess the location of cities based on their Wi
 
 ### Backend (.NET Core API)
 - **ASP.NET Core 8.0** - Web API with SignalR for real-time communication
-- **Dapper** - Lightweight ORM for database operations
+- **EntityFrameworkCore** - ORM for database operations
 - **SQL Server** - Database for storing game data, lobbies, and player information
 - **External APIs Integration**:
   - Wikipedia API - For retrieving city articles and descriptions
