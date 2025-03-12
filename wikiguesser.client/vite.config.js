@@ -10,6 +10,7 @@ const target = process.env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${process.
 
 export default defineConfig({
     plugins: [react()],
+    base: '/',
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -17,7 +18,7 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/weatherforecast': {
+            '^/api': {
                 target,
                 secure: false
             }

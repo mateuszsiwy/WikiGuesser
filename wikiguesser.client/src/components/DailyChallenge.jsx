@@ -28,8 +28,9 @@ function DailyChallenge({username}) {
         try {
             setLoading(true);
             setError(null);
+            const API_URL = import.meta.env.VITE_API_URL;
 
-            const response = await fetch('http://localhost:5084/api/wikipedia/daily');
+            const response = await fetch(`${API_URL}/api/wikipedia/daily`);
 
             if (!response.ok) {
                 throw new Error(`Server responded with status: ${response.status}`);
@@ -42,8 +43,7 @@ function DailyChallenge({username}) {
             }
 
             setCity(dailyCity);
-
-            const locationResponse = await fetch(`http://localhost:5084/api/wikipedia/location/${encodeURIComponent(dailyCity)}`);
+            const locationResponse = await fetch(`${API_URL}/api/wikipedia/location/${encodeURIComponent(dailyCity)}`);
 
             if (!locationResponse.ok) {
                 throw new Error(`Failed to fetch location data: ${locationResponse.status}`);
@@ -98,7 +98,9 @@ function DailyChallenge({username}) {
             setHintLevel(newHintLevel);
 
             try {
-                const response = await fetch(`http://localhost:5084/api/wikipedia/daily/${encodeURIComponent(city)}/hint/${newHintLevel}`);
+                const API_URL = import.meta.env.VITE_API_URL;
+
+                const response = await fetch(`${API_URL}/api/wikipedia/daily/${encodeURIComponent(city)}/hint/${newHintLevel}`);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch hint: ${response.status}`);

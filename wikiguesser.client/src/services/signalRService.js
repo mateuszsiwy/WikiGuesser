@@ -2,9 +2,10 @@
 
 const createSignalRConnection = (token) => {
     console.log("🔹 Token JWT przekazany do SignalR:", token);
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const connection = new HubConnectionBuilder()
-        .withUrl('http://localhost:5084/chatHub', {
+        .withUrl(`${API_URL}/chatHub`, {
             accessTokenFactory: () => {
                 console.log("📡 Wysyłanie tokena JWT do SignalR...");
                 return token;

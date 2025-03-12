@@ -1,5 +1,5 @@
 import React from 'react';
-import './Gamemode.css';
+import './GameMode.css';
 
 function GameMode({ image, h2, p }) {
     const divStyle = {

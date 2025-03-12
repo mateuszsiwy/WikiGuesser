@@ -114,7 +114,8 @@ const LobbyComponent = ({connection}) => {
         const fetchLobbies = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch('http://localhost:5084/api/lobby', {});
+                const API_URL = import.meta.env.VITE_API_URL;
+                const response = await fetch(`${API_URL}/api/lobby`, {});
 
                 if (response.ok) {
                     const data = await response.json();

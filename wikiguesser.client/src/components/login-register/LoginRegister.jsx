@@ -24,8 +24,8 @@ function LoginRegister({ setUsername }) {
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
         console.log('Login form submitted');
-
-        const response = await fetch('http://localhost:5084/api/auth/login', {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${API_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,8 +68,8 @@ function LoginRegister({ setUsername }) {
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         console.log('Register form submitted');
-
-        const response = await fetch('http://localhost:5084/api/auth/register', {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${API_URL}/api/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

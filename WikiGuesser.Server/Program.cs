@@ -36,7 +36,7 @@ builder.Services.AddLogging(loggingBuilder =>
 });
 
 
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", builder =>
     {
@@ -44,6 +44,17 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();
+    });
+});*/
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVercel", builder =>
+    {
+        builder
+            .WithOrigins("https://wikiguesser-three.vercel.app", "http://localhost:5173")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
 
@@ -106,14 +117,21 @@ builder.Host.UseSerilog();*/
 
 var app = builder.Build();
 
+app.UseCors("AllowVercel");
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
-app.UseCors("AllowFrontend");
+app.UseSwagger();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dispatch API V1");
+        c.RoutePrefix = string.Empty;
+    });
 }
 
 app.UseHttpsRedirection();

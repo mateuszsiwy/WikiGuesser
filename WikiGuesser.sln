@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WikiGuesser.Server", "WikiGuesser.Server\WikiGuesser.Server.csproj", "{A9269FA3-B650-41EC-9934-51EC3890F53C}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "wikiguesser.client", "wikiguesser.client\wikiguesser.client.esproj", "{86F02AFD-0E03-4716-9DF6-B970C7E76FE8}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "wikiguesser.client", "wikiguesser.client\wikiguesser.client.esproj", "{B24A0A15-E4CC-4EE1-AD68-53C64F682E3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +17,10 @@ Global
 		{A9269FA3-B650-41EC-9934-51EC3890F53C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9269FA3-B650-41EC-9934-51EC3890F53C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9269FA3-B650-41EC-9934-51EC3890F53C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86F02AFD-0E03-4716-9DF6-B970C7E76FE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86F02AFD-0E03-4716-9DF6-B970C7E76FE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86F02AFD-0E03-4716-9DF6-B970C7E76FE8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{86F02AFD-0E03-4716-9DF6-B970C7E76FE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86F02AFD-0E03-4716-9DF6-B970C7E76FE8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86F02AFD-0E03-4716-9DF6-B970C7E76FE8}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B24A0A15-E4CC-4EE1-AD68-53C64F682E3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B24A0A15-E4CC-4EE1-AD68-53C64F682E3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B24A0A15-E4CC-4EE1-AD68-53C64F682E3E}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{B24A0A15-E4CC-4EE1-AD68-53C64F682E3E}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -30,7 +30,9 @@ function GamePage({username, connection}) {
         if (!lobbyId) return;
 
         try {
-            const response = await fetch(`http://localhost:5084/api/lobby/${lobbyId}/gamestate`);
+            const API_URL = import.meta.env.VITE_API_URL;
+
+            const response = await fetch(`${API_URL}/api/lobby/${lobbyId}/gamestate`);
             if (response.ok) {
                 const gameState = await response.json();
                 console.log("Retrieved game state:", gameState);
@@ -163,7 +165,8 @@ function GamePage({username, connection}) {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5084/api/wikipedia/randomArticle');
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await fetch(`${API_URL}/api/wikipedia/randomArticle`);
             
             if (!response.ok) {
                 throw new Error(`Failed to fetch article: ${response.status}`);

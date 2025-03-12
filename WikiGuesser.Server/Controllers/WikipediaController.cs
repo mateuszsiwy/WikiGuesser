@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using WikiGuesser.Server.Interfaces.Services;
 using WikiGuesser.Server.Models;
 

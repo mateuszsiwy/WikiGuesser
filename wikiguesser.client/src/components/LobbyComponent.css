@@ -27,7 +27,28 @@
     border-radius: 0 4px 4px 0;
     cursor: pointer;
 }
+.lobby-list {
+    max-height: 60vh; /* Limit height to 60% of viewport height */
+    overflow-y: auto; /* Add vertical scrolling */
+    padding-right: 5px; /* Add some padding for the scrollbar */
+}
+.lobby-list::-webkit-scrollbar {
+    width: 8px;
+}
 
+.lobby-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.lobby-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.lobby-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
 .lobby-list ul {
     list-style-type: none;
     padding: 0;
