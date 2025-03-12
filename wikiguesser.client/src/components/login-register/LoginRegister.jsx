@@ -59,6 +59,7 @@ function LoginRegister({ setUsername }) {
 
             navigate('/');
         } else {
+            alert("Wrong Credentials");
             const result = await response.json();
             console.log(result);
             setErrorMessage(result[0]?.description || 'Login failed');
@@ -68,27 +69,45 @@ function LoginRegister({ setUsername }) {
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         console.log('Register form submitted');
+        setErrorMessage('');
+        
         const API_URL = import.meta.env.VITE_API_URL;
-        const response = await fetch(`${API_URL}/api/auth/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: e.target[0].value,
-                email: e.target[1].value,
-                password: e.target[2].value
-            })
-        });
-
-        if (response.ok) {
-            console.log('Registration successful');
-            alert('Registration successful');
-            navigate('/login');
-        } else {
+        try {
+            const response = await fetch(`${API_URL}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: e.target[0].value,
+                    email: e.target[1].value,
+                    password: e.target[2].value
+                })
+            });
+    
             const result = await response.json();
-            console.log(result);
-            setErrorMessage(result[0]?.description || 'Registration failed');
+            
+            if (response.ok) {
+                console.log('Registration successful');
+                alert('Registration successful');
+                navigate('/login');
+            } else {
+                console.log('Registration failed:', result);
+                
+                if (Array.isArray(result) && result.length > 0) {
+                    setErrorMessage(result[0].description || 'Registration failed');
+                } else if (result.errors) {
+                    const errorMsg = Object.values(result.errors).flat()[0];
+                    setErrorMessage(errorMsg || 'Registration failed');
+                } else if (result.message) {
+                    setErrorMessage(result.message);
+                } else {
+                    setErrorMessage('Registration failed. Please try again.');
+                }
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            setErrorMessage('An unexpected error occurred. Please try changing the email address.');
         }
     };
 
@@ -99,8 +118,8 @@ function LoginRegister({ setUsername }) {
                     <form onSubmit={handleLoginSubmit}>
                         <h1>Login</h1>
                         <div className="input-box">
-                            <input type="text" placeholder="Username" required />
-                            <FaUser className="icon" />
+                            <input type="text" placeholder="Email" required />
+                            <FaEnvelope className="icon" />
                         </div>
                         <div className="input-box">
                             <input type="password" placeholder="Password" required />

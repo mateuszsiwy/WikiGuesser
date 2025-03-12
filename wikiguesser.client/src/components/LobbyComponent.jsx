@@ -246,7 +246,7 @@ const LobbyComponent = ({connection}) => {
                 </div>
                 <div className="lobby-list">
                     {isLoading ? (
-                        <p>Loading lobbies...</p>
+                        <p>Loading lobbies... Refresh if taking too long</p>
                     ) : lobbies.length === 0 ? (
                         <p>No lobbies available. Create one to start playing!</p>
                     ) : (

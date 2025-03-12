@@ -30,6 +30,11 @@ namespace WikiGuesser.Server.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDTO register)
         {
+            var existingUser = await _userManager.FindByEmailAsync(register.Email);
+            if (existingUser != null)
+            {
+                return BadRequest(new[] { new { description = "Email is already in use" } });
+            }
             var user = new IdentityUser
             {
                 Email = register.Email,
